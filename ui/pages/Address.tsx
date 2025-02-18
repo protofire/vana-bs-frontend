@@ -335,8 +335,7 @@ const AddressPageContent = () => {
 
     if (KNOWN_ADDRESSES[hash]) {
       const publicTags = [
-        { slug: hash, name: 'Official Vana Contract', tagType: 'custom' as const, ordinal: 102, meta: { bgColor: 'vana.positive', textColor: 'gray.50' } },
-        { slug: hash, name: KNOWN_ADDRESSES[hash], tagType: 'custom' as const, ordinal: 101, meta: { bgColor: 'vana.positive', textColor: 'gray.50' } },
+        { slug: hash, name: 'Official Vana Contract', tagType: 'custom' as const, ordinal: 101, meta: { bgColor: 'vana.positive', textColor: 'gray.50' } },
       ];
 
       blockscoutTags = blockscoutTags.concat(publicTags);
