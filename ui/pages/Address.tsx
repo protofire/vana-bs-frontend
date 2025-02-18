@@ -272,8 +272,23 @@ const AddressPageContent = () => {
 
   const usernameApiTag = userPropfileApiQuery.data?.user_profile?.username;
 
+  const KNOWN_ADDRESSES: Record<string, string> = React.useMemo(() => {
+    return {
+      '0x06133699b1ebb8d42e73047cbdf66b1497d63971': 'Binance',
+      '0xff14346dF2B8Fd0c95BF34f1c92e49417b508AD5': 'DLPRoot',
+      '0xbb532917B6407c060Afd9Cb7d53527eCb91d6662': 'DLPRootMetrics',
+      '0x52c3260ED5C235fcA43524CF508e29c897318775': 'DLPRootStakesTreasury',
+      '0xDBFb6B8b9E2eCAEbdE64d665cD553dB81e524479': 'DLPRootRewardsTreasury',
+      '0x8C8788f98385F6ba1adD4234e551ABba0f82Cb7C': 'DataRegistry',
+      '0x3c92fD91639b41f13338CE62f19131e7d19eaa0D': 'TeePool',
+      '0xE8EC6BD73b23Ad40E6B9a6f4bD343FAc411bD99A': 'TeePoolPhala',
+      '0xD8d2dFca27E8797fd779F8547166A2d3B29d360E': 'Multicall3',
+      '0x8807e8BCDFbaA8c2761760f3FBA37F6f7F2C5b2d': 'Multisend',
+    };
+  }, []);
+
   const tags: Array<EntityTag> = React.useMemo(() => {
-    return [
+    let blockscoutTags = [
       ...(addressQuery.data?.public_tags?.map((tag) => ({ slug: tag.label, name: tag.display_name, tagType: 'custom' as const, ordinal: -1 })) || []),
       !addressQuery.data?.is_contract ? { slug: 'eoa', name: 'EOA', tagType: 'custom' as const, ordinal: PREDEFINED_TAG_PRIORITY } : undefined,
       config.features.validators.isEnabled && addressQuery.data?.has_validated_blocks ?
@@ -316,7 +331,18 @@ const AddressPageContent = () => {
           },
         } :
         undefined,
-    ].filter(Boolean).sort(sortEntityTags);
+    ];
+
+    if (KNOWN_ADDRESSES[hash]) {
+      const publicTags = [
+        { slug: hash, name: 'Official Vana Contract', tagType: 'custom' as const, ordinal: 102, meta: { bgColor: 'vana.positive', textColor: 'gray.50' } },
+        { slug: hash, name: KNOWN_ADDRESSES[hash], tagType: 'custom' as const, ordinal: 101, meta: { bgColor: 'vana.positive', textColor: 'gray.50' } },
+      ];
+
+      blockscoutTags = blockscoutTags.concat(publicTags);
+    }
+
+    return blockscoutTags.filter(Boolean).sort(sortEntityTags);
   }, [
     addressMetadataQuery.data,
     addressQuery.data,
@@ -326,6 +352,7 @@ const AddressPageContent = () => {
     mudTablesCountQuery.data,
     usernameApiTag,
     xStarQuery.data?.data,
+    KNOWN_ADDRESSES,
   ]);
 
   const titleContentAfter = (
