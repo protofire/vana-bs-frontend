@@ -68,6 +68,7 @@ const NavigationDesktop = () => {
       width={{ lg: isExpanded ? '229px' : '92px', xl: isCollapsed ? '92px' : '229px' }}
       { ...getDefaultTransitionProps({ transitionProperty: 'width, padding' }) }
       onClick={ handleContainerClick }
+      bgColor="vana.bgSubtle"
     >
       <TestnetBadge position="absolute" pl={ 3 } w="49px" top="34px"/>
       <Box

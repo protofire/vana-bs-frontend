@@ -189,17 +189,19 @@ const Stats = () => {
 
   return (
     <Grid
-      gridTemplateColumns="1fr 1fr"
+      gridTemplateColumns="1fr 1fr 1fr 1fr 1fr"
       gridGap={{ base: 1, lg: 2 }}
       flexBasis="50%"
       flexGrow={ 1 }
     >
-      { items.map((item, index) => (
+      { items.map((item) => (
         <StatsWidget
           key={ item.id }
           { ...item }
           isLoading={ isLoading }
-          _last={ items.length % 2 === 1 && index === items.length - 1 ? { gridColumn: 'span 2' } : undefined }/>
+          bgColor="vana.bgSubtle"
+          borderRadius="md"
+          _last={{ gridColumn: 'span 1' }}/>
       ),
       ) }
     </Grid>

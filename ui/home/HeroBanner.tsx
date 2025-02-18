@@ -47,18 +47,19 @@ const HeroBanner = () => {
       w="100%"
       background={ background }
       border={ border }
-      borderRadius="md"
+      borderRadius="lg"
       p={{ base: 4, lg: 8 }}
+      paddingInline={{ startsWith: 10, endsWith: 10 }}
       columnGap={ 8 }
       alignItems="center"
     >
       <Box flexGrow={ 1 }>
-        <Flex mb={{ base: 2, lg: 3 }} justifyContent="space-between" alignItems="center" columnGap={ 2 }>
+        <Flex mb={{ base: 2, lg: 6 }} justifyContent="space-between" alignItems="center" columnGap={ 2 }>
           <Heading
             as="h1"
-            fontSize={{ base: '18px', lg: '30px' }}
-            lineHeight={{ base: '24px', lg: '36px' }}
-            fontWeight={{ base: 500, lg: 700 }}
+            fontSize={{ base: '18px', lg: '40px' }}
+            lineHeight={{ base: '24px', lg: '48px' }}
+            fontWeight={{ base: 600, lg: 600 }}
             color={ textColor }
           >
             {

@@ -3,7 +3,7 @@ import { theme } from '@chakra-ui/react';
 import config from 'configs/app';
 
 export const BODY_TYPEFACE = config.UI.fonts.body?.name ?? 'Inter';
-export const HEADING_TYPEFACE = config.UI.fonts.heading?.name ?? 'Poppins';
+export const HEADING_TYPEFACE = config.UI.fonts.heading?.name ?? 'Inter';
 
 const typography = {
   fonts: {
