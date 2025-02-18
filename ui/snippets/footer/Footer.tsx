@@ -9,10 +9,7 @@ import config from 'configs/app';
 import type { ResourceError } from 'lib/api/resources';
 import useApiQuery from 'lib/api/useApiQuery';
 import useFetch from 'lib/hooks/useFetch';
-import useIssueUrl from 'lib/hooks/useIssueUrl';
-import { copy } from 'lib/html-entities';
 import Skeleton from 'ui/shared/chakra/Skeleton';
-import IconSvg from 'ui/shared/IconSvg';
 import { CONTENT_MAX_WIDTH } from 'ui/shared/layout/utils';
 import NetworkAddToWallet from 'ui/shared/NetworkAddToWallet';
 
@@ -22,8 +19,8 @@ import getApiVersionUrl from './utils/getApiVersionUrl';
 
 const MAX_LINKS_COLUMNS = 4;
 
-const FRONT_VERSION_URL = `https://github.com/blockscout/frontend/tree/${ config.UI.footer.frontendVersion }`;
-const FRONT_COMMIT_URL = `https://github.com/blockscout/frontend/commit/${ config.UI.footer.frontendCommit }`;
+// const FRONT_VERSION_URL = `https://github.com/blockscout/frontend/tree/${ config.UI.footer.frontendVersion }`;
+// const FRONT_COMMIT_URL = `https://github.com/blockscout/frontend/commit/${ config.UI.footer.frontendCommit }`;
 
 const Footer = () => {
 
@@ -33,59 +30,28 @@ const Footer = () => {
     },
   });
   const apiVersionUrl = getApiVersionUrl(backendVersionData?.backend_version);
-  const issueUrl = useIssueUrl(backendVersionData?.backend_version);
   const logoColor = useColorModeValue('blue.600', 'white');
 
   const BLOCKSCOUT_LINKS = [
     {
-      icon: 'edit' as const,
-      iconSize: '16px',
-      text: 'Submit an issue',
-      url: issueUrl,
-    },
-    {
-      icon: 'social/git' as const,
-      iconSize: '18px',
-      text: 'Contribute',
-      url: 'https://github.com/blockscout/blockscout',
-    },
-    {
       icon: 'social/twitter' as const,
       iconSize: '18px',
       text: 'X (ex-Twitter)',
-      url: 'https://www.twitter.com/blockscoutcom',
+      url: 'https://x.com/withvana',
     },
     {
       icon: 'social/discord' as const,
       iconSize: '24px',
       text: 'Discord',
-      url: 'https://discord.gg/blockscout',
+      url: 'https://discord.com/invite/withvana',
     },
     {
-      icon: 'brands/blockscout' as const,
+      icon: 'social/git' as const,
       iconSize: '18px',
-      text: 'All chains',
-      url: 'https://www.blockscout.com/chains-and-projects',
-    },
-    {
-      icon: 'donate' as const,
-      iconSize: '20px',
-      text: 'Donate',
-      url: 'https://github.com/sponsors/blockscout',
+      text: 'Contribute',
+      url: 'https://github.com/vana-com',
     },
   ];
-
-  const frontendLink = (() => {
-    if (config.UI.footer.frontendVersion) {
-      return <Link href={ FRONT_VERSION_URL } target="_blank">{ config.UI.footer.frontendVersion }</Link>;
-    }
-
-    if (config.UI.footer.frontendCommit) {
-      return <Link href={ FRONT_COMMIT_URL } target="_blank">{ config.UI.footer.frontendCommit }</Link>;
-    }
-
-    return null;
-  })();
 
   const fetch = useFetch();
 
@@ -119,17 +85,12 @@ const Footer = () => {
     return (
       <Box gridArea={ gridArea }>
         <Flex columnGap={ 2 } fontSize="xs" lineHeight={ 5 } alignItems="center" color="text">
-          <span>Made with</span>
-          <Link href="https://www.blockscout.com" isExternal display="inline-flex" color={ logoColor } _hover={{ color: logoColor }}>
-            <IconSvg
-              name="networks/logo-placeholder"
-              width="80px"
-              height={ 4 }
-            />
+          <Link href="https://vana.org" isExternal display="inline-flex" color={ logoColor } _hover={{ color: logoColor }}>
+            vana.org
           </Link>
         </Flex>
         <Text mt={ 3 } fontSize="xs">
-          Blockscout is a tool for inspecting and analyzing EVM based blockchains. Blockchain explorer for Ethereum Networks.
+          Explore transactions, accounts, Data Liquidity Pools, gas fees and other network activity within the Vana blockchain.
         </Text>
         <Box mt={ 6 } alignItems="start" fontSize="xs" lineHeight={ 5 }>
           { apiVersionUrl && (
@@ -137,23 +98,19 @@ const Footer = () => {
               Backend: <Link href={ apiVersionUrl } target="_blank">{ backendVersionData?.backend_version }</Link>
             </Text>
           ) }
-          { frontendLink && (
-            <Text>
-              Frontend: { frontendLink }
-            </Text>
-          ) }
-          <Text>
-            Copyright { copy } Blockscout Limited 2023-{ (new Date()).getFullYear() }
-          </Text>
         </Box>
       </Box>
     );
-  }, [ apiVersionUrl, backendVersionData?.backend_version, frontendLink, logoColor ]);
+  }, [ apiVersionUrl, backendVersionData?.backend_version, logoColor ]);
 
   const containerProps: HTMLChakraProps<'div'> = {
     as: 'footer',
     borderTopWidth: '1px',
     borderTopColor: 'solid',
+    paddingInlineStart: '12',
+    paddingInlineEnd: '12',
+    paddingTop: '4',
+    paddingBottom: '4',
   };
 
   const contentProps: GridProps = {
@@ -166,19 +123,20 @@ const Footer = () => {
   };
 
   const renderRecaptcha = (gridArea?: GridProps['gridArea']) => {
-    if (!config.services.reCaptchaV2.siteKey) {
+    // Disabling captch copy since its disabled
+    if (!config.services.reCaptchaV2.siteKey || true) { // eslint-disable-line
       return <Box gridArea={ gridArea }/>;
     }
 
-    return (
-      <Box gridArea={ gridArea } fontSize="xs" lineHeight={ 5 } mt={ 6 } color="text">
-        <span>This site is protected by reCAPTCHA and the Google </span>
-        <Link href="https://policies.google.com/privacy" isExternal>Privacy Policy</Link>
-        <span> and </span>
-        <Link href="https://policies.google.com/terms" isExternal>Terms of Service</Link>
-        <span> apply.</span>
-      </Box>
-    );
+    // return (
+    //   <Box gridArea={ gridArea } fontSize="xs" lineHeight={ 5 } mt={ 6 } color="text">
+    //     <span>This site is protected by reCAPTCHA and the Google </span>
+    //     <Link href="https://policies.google.com/privacy" isExternal>Privacy Policy</Link>
+    //     <span> and </span>
+    //     <Link href="https://policies.google.com/terms" isExternal>Terms of Service</Link>
+    //     <span> apply.</span>
+    //   </Box>
+    // );
   };
 
   if (config.UI.footer.links) {
@@ -240,19 +198,9 @@ const Footer = () => {
         { renderRecaptcha({ lg: 'recaptcha' }) }
 
         <Grid
+          display="flex"
           gridArea={{ lg: 'links-bottom' }}
-          gap={ 1 }
-          gridTemplateColumns={{
-            base: 'repeat(auto-fill, 160px)',
-            lg: 'repeat(2, 160px)',
-            xl: 'repeat(3, 160px)',
-          }}
-          gridTemplateRows={{
-            base: 'auto',
-            lg: 'repeat(3, auto)',
-            xl: 'repeat(2, auto)',
-          }}
-          gridAutoFlow={{ base: 'row', lg: 'column' }}
+          columnGap={ 8 }
           alignContent="start"
           justifyContent={{ lg: 'flex-end' }}
           mt={{ base: 8, lg: 0 }}
