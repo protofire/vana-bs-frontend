@@ -275,15 +275,15 @@ const AddressPageContent = () => {
   const KNOWN_ADDRESSES: Record<string, string> = React.useMemo(() => {
     return {
       '0x06133699b1ebb8d42e73047cbdf66b1497d63971': 'Binance',
-      '0xff14346dF2B8Fd0c95BF34f1c92e49417b508AD5': 'DLPRoot',
-      '0xbb532917B6407c060Afd9Cb7d53527eCb91d6662': 'DLPRootMetrics',
-      '0x52c3260ED5C235fcA43524CF508e29c897318775': 'DLPRootStakesTreasury',
-      '0xDBFb6B8b9E2eCAEbdE64d665cD553dB81e524479': 'DLPRootRewardsTreasury',
-      '0x8C8788f98385F6ba1adD4234e551ABba0f82Cb7C': 'DataRegistry',
-      '0x3c92fD91639b41f13338CE62f19131e7d19eaa0D': 'TeePool',
-      '0xE8EC6BD73b23Ad40E6B9a6f4bD343FAc411bD99A': 'TeePoolPhala',
-      '0xD8d2dFca27E8797fd779F8547166A2d3B29d360E': 'Multicall3',
-      '0x8807e8BCDFbaA8c2761760f3FBA37F6f7F2C5b2d': 'Multisend',
+      '0xff14346df2b8fd0c95bf34f1c92e49417b508ad5': 'DLPRoot',
+      '0xbb532917b6407c060afd9cb7d53527ecb91d6662': 'DLPRootMetrics',
+      '0x52c3260ed5c235fca43524cf508e29c897318775': 'DLPRootStakesTreasury',
+      '0xdbfb6b8b9e2ecaebde64d665cd553db81e524479': 'DLPRootRewardsTreasury',
+      '0x8c8788f98385f6ba1add4234e551abba0f82cb7c': 'DataRegistry',
+      '0x3c92fd91639b41f13338ce62f19131e7d19eaa0d': 'TeePool',
+      '0xe8ec6bd73b23ad40e6b9a6f4bd343fac411bd99a': 'TeePoolPhala',
+      '0xd8d2dfca27e8797fd779f8547166a2d3b29d360e': 'Multicall3',
+      '0x8807e8bcdfbaa8c2761760f3fba37f6f7f2c5b2d': 'Multisend',
     };
   }, []);
 
@@ -333,9 +333,18 @@ const AddressPageContent = () => {
         undefined,
     ];
 
-    if (KNOWN_ADDRESSES[hash]) {
+    if (KNOWN_ADDRESSES[hash.toLowerCase()]) {
       const publicTags = [
-        { slug: hash, name: 'Official Vana Contract', tagType: 'custom' as const, ordinal: 101, meta: { bgColor: 'vana.positive', textColor: 'gray.50' } },
+        {
+          slug: hash,
+          name: KNOWN_ADDRESSES[hash.toLowerCase()] === 'Binance' ? 'Binance' : 'Official Vana Contract',
+          tagType: 'custom' as const,
+          ordinal: 101,
+          meta: {
+            bgColor: 'vana.positive',
+            textColor: 'gray.50',
+          },
+        },
       ];
 
       blockscoutTags = blockscoutTags.concat(publicTags);
