@@ -9,13 +9,6 @@ const title = 'Blockchain interaction (writing to contract, etc.)';
 
 const config: Feature<{ walletConnect: { projectId: string } }> = (() => {
 
-  console.log('id', chain.id); // eslint-disable-line
-  console.log('name', chain.name); // eslint-disable-line
-  console.log('currency', chain.currency); // eslint-disable-line
-  console.log('rpcUrls', chain.rpcUrls); // eslint-disable-line
-  console.log('wc', walletConnectProjectId?.slice(0, 5)); // eslint-disable-line
-  console.log('should be enabled', Boolean(chain.id && chain.name && chain.currency.name && chain.currency.symbol && chain.currency.decimals && chain.rpcUrls.length > 0 && walletConnectProjectId)) // eslint-disable-line
-
   if (
     // all chain parameters are required for wagmi provider
     // @wagmi/chains/dist/index.d.ts

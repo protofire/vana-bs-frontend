@@ -33,7 +33,7 @@ const NavLinkGroup = ({ item, isCollapsed }: Props) => {
   const isHighlighted = checkRouteHighlight(item.subItems);
 
   return (
-    <Box as="li" listStyleType="none" w="100%">
+    <Box as="li" listStyleType="none" w="100%" cursor="pointer">
       <Popover
         trigger="hover"
         placement="right-start"
