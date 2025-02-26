@@ -3,7 +3,7 @@ import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 
 // eslint-disable-next-line no-restricted-imports
-import logoIcon from 'icons/networks/logo-placeholder.svg';
+import logoIcon from 'icons/networks/logo-network.svg';
 
 const ChartWatermarkIcon = (props: IconProps) => {
   const watermarkColor = useColorModeValue('link', 'white');
