@@ -75,6 +75,9 @@ export function app(): CspDev.DirectiveDescriptor {
 
       // CapybaraRunner
       '\'sha256-5+YTmTcBwCYdJ8Jetbr6kyjGp0Ry/H7ptpoun6CrSwQ=\'',
+
+      // Chackra UI ColorModeScript SHA256
+      '\'sha256-oaFx7Djcy5UNEYTupAtgdozax9PrPk0i1RK0PwllMbY=\'',
     ],
 
     'style-src': [
