@@ -284,6 +284,8 @@ const AddressPageContent = () => {
       '0xe8ec6bd73b23ad40e6b9a6f4bd343fac411bd99a': 'TeePoolPhala',
       '0xd8d2dfca27e8797fd779f8547166a2d3b29d360e': 'Multicall3',
       '0x8807e8bcdfbaa8c2761760f3fba37f6f7f2c5b2d': 'Multisend',
+      '0xc3d176cf6bccfcb9225b53b87a95147218e1537f': 'DLPRootEpochProxy',
+      '0x0aba5e28228c323a67712101d61a54d4ff5720fd': 'DLPRootCoreProxy',
     };
   }, []);
 
