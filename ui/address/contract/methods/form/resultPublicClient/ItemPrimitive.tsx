@@ -54,7 +54,7 @@ const ItemPrimitive = ({ abiParameter, data, level, hideLabel }: Props) => {
     if (intMatch && typeof data === 'bigint' && intMatch.max > INT_TOOLTIP_THRESHOLD && data > INT_TOOLTIP_THRESHOLD) {
       const dividedValue = BigNumber(data.toString()).div(WEI);
       return (
-        <Tooltip label={ dividedValue.toLocaleString() + ' ETH' }>
+        <Tooltip label={ dividedValue.toLocaleString() + ' VANA' }>
           <span>{ castValueToString(data) }</span>
         </Tooltip>
       );

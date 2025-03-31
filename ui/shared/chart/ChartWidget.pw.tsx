@@ -25,7 +25,7 @@ const props: Props = {
   ],
   title: 'Native coin circulating supply',
   description: 'Amount of token circulating supply for the period',
-  units: 'ETH',
+  units: 'VANA',
   isLoading: false,
   isError: false,
   noAnimation: true,
