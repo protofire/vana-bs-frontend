@@ -286,6 +286,9 @@ const AddressPageContent = () => {
       '0x8807e8bcdfbaa8c2761760f3fba37f6f7f2c5b2d': 'Multisend',
       '0xc3d176cf6bccfcb9225b53b87a95147218e1537f': 'DLPRootEpochProxy',
       '0x0aba5e28228c323a67712101d61a54d4ff5720fd': 'DLPRootCoreProxy',
+      '0x44f20490A82e1f1F1cC25Dd3BA8647034eDdce30': 'VanaPoolEntity',
+      '0x641C18E2F286c86f96CE95C8ec1EB9fC0415Ca0e': 'VanaPoolStaking',
+      '0x143BE72CF2541604A7691933CAccd6D9cC17c003': 'VanaPoolTreasury',
     };
   }, []);
 
