@@ -289,6 +289,15 @@ const AddressPageContent = () => {
       '0x44f20490a82e1f1f1cc25dd3ba8647034eddce30': 'VanaPoolEntity',
       '0x641c18e2f286c86f96ce95c8ec1eb9fc0415ca0e': 'VanaPoolStaking',
       '0x143be72cf2541604a7691933caccd6d9cc17c003': 'VanaPoolTreasury',
+      '0x93c3ef89369fdcf08be159d9def0f18ab6be008c': 'DataRefinerRegistry',
+      '0xd25eb66ea2452cf3238a2ec6c1fd1b7f5b320490': 'QueryEngine',
+      '0x5786b12b4c6ba2bfaf0e77ed30bf6d32805563a5': 'ComputeInstructionRegistry',
+      '0xb2bfe33fa420c45f1cf1287542ad81ae935447bd': 'ComputeEngine',
+      '0xe124bae846d5ec157f75bd9e68ca87c4d2ab835a': 'ephemeral-standard',
+      '0xe8bb8d0629651cf33e0845d743976dc1f0971d76': 'persistent-standard',
+      '0x1c346cd74f8551f8fa13f3f4b6b8dae22338e6a9': 'persistent-gpu',
+      '0xf024b7ac5e8417416f53b41ecfa58c8e9396687d': 'dedicated-standard',
+      '0xb1686fa9620bbf851714d1cb47b8a4bf4664644e': 'dedicated-gpu'
     };
   }, []);
 
