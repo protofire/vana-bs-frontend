@@ -33,7 +33,7 @@ const ContractMethodFieldInput = ({ data, hideLabel, path: name, className, isDi
   const [ intPower, setIntPower ] = React.useState<number>(18);
 
   const isNativeCoin = data.fieldType === 'native_coin';
-  const isOptional = isOptionalProp || isNativeCoin;
+  const isOptional = isOptionalProp || isNativeCoin || data.type === 'string';
 
   const argTypeMatchInt = React.useMemo(() => matchInt(data.type), [ data.type ]);
   const hasTimestampButton = React.useMemo(() => TIMESTAMP_BUTTON_REGEXP.test(data.name || ''), [ data.name ]);
@@ -157,7 +157,7 @@ const ContractMethodFieldInput = ({ data, hideLabel, path: name, className, isDi
             onPaste={ handlePaste }
             required={ !isOptional }
             isInvalid={ Boolean(error) }
-            placeholder={ data.type }
+            placeholder={ data.type === 'string' ? 'Empty string allowed' : data.type }
             autoComplete="off"
             data-1p-ignore
             bgColor={ inputBgColor }

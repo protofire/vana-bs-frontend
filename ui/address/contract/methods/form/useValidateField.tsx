@@ -19,6 +19,12 @@ export default function useValidateField({ isOptional, argType, argTypeMatchInt 
   // some values are formatted before they are sent to the validator
   // see ./useFormatFieldValue.tsx hook
   return React.useCallback((value: string | boolean | undefined) => {
+    // For string types, empty values are always valid
+    if (argType === 'string' && (value === undefined || value === '')) {
+      return true;
+    }
+
+    // For other types, check if empty value is allowed
     if (value === undefined || value === '') {
       return isOptional ? true : 'Field is required';
     }
