@@ -11,7 +11,24 @@ export default function useFormatFieldValue({ argType, argTypeMatchInt }: Params
 
   return React.useCallback((value: string | undefined) => {
     if (!value) {
+      // For string types, preserve empty string as is
+      if (argType === 'string') {
+        return '';
+      }
       return;
+    }
+
+    // For string types, if value is exactly '""', treat it as a two-character string
+    // Otherwise, remove any surrounding quotes that might have been added
+    if (argType === 'string') {
+      if (value === '""') {
+        return value;
+      }
+      // Remove surrounding quotes if they exist
+      if (value.startsWith('"') && value.endsWith('"')) {
+        return value.slice(1, -1);
+      }
+      return value;
     }
 
     if (argTypeMatchInt) {
