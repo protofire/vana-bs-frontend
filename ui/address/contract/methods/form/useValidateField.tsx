@@ -26,7 +26,7 @@ export default function useValidateField({ isOptional, argType, argTypeMatchInt 
 
     // For other types, check if empty value is allowed
     if (value === undefined || value === '') {
-      return isOptional ? true : 'Field is required';
+      return isOptional ? true : 'Field is required!';
     }
 
     if (argType === 'address') {
