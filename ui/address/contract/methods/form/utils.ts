@@ -81,9 +81,9 @@ export function transformFormDataToMethodArgs(formData: ContractMethodFormFields
     set(result, field.replaceAll(':', '.'), value);
   }
 
-  const filteredResult = filterOutEmptyItems(result);
-  const mappedResult = mapEmptyNestedArrays(filteredResult);
-  return mappedResult;
+  // const filteredResult = filterOutEmptyItems(result);
+  // const mappedResult = mapEmptyNestedArrays(filteredResult);
+  return result;
 }
 
 function filterOutEmptyItems(array: Array<unknown>): Array<unknown> {
