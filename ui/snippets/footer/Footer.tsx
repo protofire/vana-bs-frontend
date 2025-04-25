@@ -107,8 +107,8 @@ const Footer = () => {
     as: 'footer',
     borderTopWidth: '1px',
     borderTopColor: 'solid',
-    paddingInlineStart: '12',
-    paddingInlineEnd: '12',
+    paddingInlineStart: { base: '4', lg: '12' },
+    paddingInlineEnd: { base: '4', lg: '12' },
     paddingTop: '4',
     paddingBottom: '4',
   };
