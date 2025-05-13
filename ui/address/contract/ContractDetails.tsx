@@ -46,8 +46,8 @@ const ContractDetails = ({ addressHash, channel, mainContractQuery }: Props) => 
     }
 
     return [
-      currentAddressItem,
       ...(addressInfo?.implementations.filter((item) => item.address !== addressHash && item.name) || []),
+      currentAddressItem,
     ];
   }, [ addressInfo, addressHash ]);
 
