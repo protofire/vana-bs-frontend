@@ -78,7 +78,8 @@ export function transformFormDataToMethodArgs(formData: ContractMethodFormFields
 
   for (const field in formData) {
     const value = formData[field];
-    set(result, field.replaceAll(':', '.'), value);
+    const castedValue = castValue(value);
+    set(result, field.replaceAll(':', '.'), castedValue);
   }
 
   // const filteredResult = filterOutEmptyItems(result);
@@ -86,30 +87,16 @@ export function transformFormDataToMethodArgs(formData: ContractMethodFormFields
   return result;
 }
 
-function filterOutEmptyItems(array: Array<unknown>): Array<unknown> {
-  // The undefined value may occur in two cases:
-  //    1. When an optional form field is left blank by the user.
-  //        The only optional field is the native coin value, which is safely handled in the form submit handler.
-  //    2. When the user adds and removes items from a field array.
-  //        In this scenario, empty items need to be filtered out to maintain the correct sequence of arguments.
-  // We don't use isEmptyField() function here because of the second case otherwise it will not keep the correct order of arguments.
-  return array
-    .map((item) => Array.isArray(item) ? filterOutEmptyItems(item) : item)
-    .filter((item) => item !== undefined);
-}
+function castValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value === '""' ? '' : value;
+  }
 
-function isEmptyField(field: unknown): boolean {
-  // the empty string is meant that the field was touched but left empty
-  // the undefined is meant that the field was not touched
-  return field === undefined || field === '';
-}
+  if (Array.isArray(value)) {
+    return value.map(castValue);
+  }
 
-function isEmptyNestedArray(array: Array<unknown>): boolean {
-  return array.flat(Infinity).filter((item) => !isEmptyField(item)).length === 0;
-}
-
-function mapEmptyNestedArrays(array: Array<unknown>): Array<unknown> {
-  return array.map((item) => Array.isArray(item) && isEmptyNestedArray(item) ? [] : item);
+  return value;
 }
 
 export function getFieldLabel(input: ContractAbiItemInput, isRequired?: boolean) {
