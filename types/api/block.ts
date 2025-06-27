@@ -3,6 +3,7 @@ import type { Reward } from 'types/api/reward';
 import type { Transaction } from 'types/api/transaction';
 
 import type { ArbitrumBatchStatus, ArbitrumL2TxData } from './arbitrumL2';
+import type { InternalTransaction } from './internalTransaction';
 import type { OptimisticL2BatchDataContainer, OptimisticL2BlobTypeEip4844, OptimisticL2BlobTypeCelestia } from './optimisticL2';
 import type { TokenInfo } from './token';
 import type { TokenTransfer } from './tokenTransfer';
@@ -20,7 +21,8 @@ export interface BlockBaseFeeCelo {
 export interface Block {
   height: number;
   timestamp: string;
-  transaction_count: number;
+  transactions_count: number;
+  internal_transactions_count: number;
   miner: AddressParam;
   size: number;
   hash: string;
@@ -56,7 +58,7 @@ export interface Block {
   excess_blob_gas?: string;
   blob_transaction_count?: number;
   // ZKSYNC FIELDS
-  zksync?: Omit<ZkSyncBatchesItem, 'number' | 'transaction_count' | 'timestamp'> & {
+  zksync?: Omit<ZkSyncBatchesItem, 'number' | 'transactions_count' | 'timestamp'> & {
     batch_number: number | null;
   };
   arbitrum?: ArbitrumBlockData;
@@ -76,7 +78,7 @@ type ArbitrumBlockData = {
   commitment_transaction: ArbitrumL2TxData;
   confirmation_transaction: ArbitrumL2TxData;
   delayed_messages: number;
-  l1_block_height: number;
+  l1_block_number: number;
   send_count: number;
   send_root: string;
   status: ArbitrumBatchStatus;
@@ -84,7 +86,7 @@ type ArbitrumBlockData = {
 
 export interface OptimismBlockData {
   batch_data_container: OptimisticL2BatchDataContainer;
-  internal_id: number;
+  number: number;
   blobs: Array<OptimisticL2BlobTypeEip4844> | Array<OptimisticL2BlobTypeCelestia> | null;
   l1_timestamp: string;
   l1_transaction_hashes: Array<string>;
@@ -122,6 +124,14 @@ export interface BlockTransactionsResponse {
     block_number: number;
     items_count: number;
     index: number;
+  } | null;
+}
+
+export interface BlockInternalTransactionsResponse {
+  items: Array<InternalTransaction>;
+  next_page_params: {
+    block_index: number;
+    items_count: number;
   } | null;
 }
 
@@ -172,8 +182,8 @@ export interface BlockEpoch {
     carbon_offsetting_transfer: TokenTransfer | null;
     community_transfer: TokenTransfer | null;
     reserve_bolster_transfer: TokenTransfer | null;
-  };
-  aggregated_election_rewards: Record<EpochRewardsType, BlockEpochElectionReward | null>;
+  } | null;
+  aggregated_election_rewards: Record<EpochRewardsType, BlockEpochElectionReward | null> | null;
 }
 
 export interface BlockEpochElectionRewardDetails {

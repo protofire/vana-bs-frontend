@@ -4,7 +4,7 @@ import React from 'react';
 import type { NavItemInternal, NavItem, NavGroupItem } from 'types/client/navigation';
 
 import config from 'configs/app';
-import { rightLineArrow } from 'lib/html-entities';
+import { rightLineArrow } from 'toolkit/utils/htmlEntities';
 
 interface ReturnType {
   mainNavItems: Array<NavItem | NavGroupItem>;
@@ -44,6 +44,18 @@ export default function useNavItems(): ReturnType {
       icon: 'transactions',
       isActive: pathname === '/txs' || pathname === '/tx/[hash]',
     };
+    const operations: NavItem | null = config.features.tac.isEnabled ? {
+      text: 'Operations',
+      nextRoute: { pathname: '/operations' as const },
+      icon: 'operation',
+      isActive: pathname === '/operations' || pathname === '/operation/[id]',
+    } : null;
+    const internalTxs: NavItem | null = {
+      text: 'Internal transactions',
+      nextRoute: { pathname: '/internal-txs' as const },
+      icon: 'internal_txns',
+      isActive: pathname === '/internal-txs',
+    };
     const userOps: NavItem | null = config.features.userOps.isEnabled ? {
       text: 'User operations',
       nextRoute: { pathname: '/ops' as const },
@@ -65,10 +77,10 @@ export default function useNavItems(): ReturnType {
       isActive: pathname === '/name-domains' || pathname === '/name-domains/[name]',
     } : null;
     const validators = config.features.validators.isEnabled ? {
-      text: 'Top validators',
+      text: 'Validators',
       nextRoute: { pathname: '/validators' as const },
       icon: 'validator',
-      isActive: pathname === '/validators',
+      isActive: pathname === '/validators' || pathname === '/validators/[id]',
     } : null;
     const rollupDeposits = {
       text: `Deposits (L1${ rightLineArrow }L2)`,
@@ -109,6 +121,13 @@ export default function useNavItems(): ReturnType {
 
     const rollupFeature = config.features.rollup;
 
+    const rollupInteropMessages = rollupFeature.isEnabled && rollupFeature.interopEnabled ? {
+      text: 'Interop messages',
+      nextRoute: { pathname: '/interop-messages' as const },
+      icon: 'interop',
+      isActive: pathname === '/interop-messages',
+    } : null;
+
     if (rollupFeature.isEnabled && (
       rollupFeature.type === 'optimistic' ||
       rollupFeature.type === 'arbitrum' ||
@@ -118,9 +137,11 @@ export default function useNavItems(): ReturnType {
       blockchainNavItems = [
         [
           txs,
+          internalTxs,
           rollupDeposits,
           rollupWithdrawals,
-        ],
+          rollupInteropMessages,
+        ].filter(Boolean),
         [
           blocks,
           rollupTxnBatches,
@@ -140,6 +161,7 @@ export default function useNavItems(): ReturnType {
       blockchainNavItems = [
         [
           txs,
+          internalTxs,
           rollupDeposits,
           rollupWithdrawals,
         ],
@@ -155,6 +177,7 @@ export default function useNavItems(): ReturnType {
       blockchainNavItems = [
         [
           txs,
+          internalTxs,
           userOps,
           blocks,
           rollupTxnBatches,
@@ -169,6 +192,8 @@ export default function useNavItems(): ReturnType {
     } else {
       blockchainNavItems = [
         txs,
+        operations,
+        internalTxs,
         userOps,
         blocks,
         topAccounts,
@@ -245,6 +270,11 @@ export default function useNavItems(): ReturnType {
         text: 'Submit public tag',
         nextRoute: { pathname: '/public-tags/submit' as const },
         isActive: pathname.startsWith('/public-tags/submit'),
+      },
+      rollupFeature.isEnabled && rollupFeature.type === 'arbitrum' && {
+        text: 'Txn withdrawals',
+        nextRoute: { pathname: '/txn-withdrawals' as const },
+        isActive: pathname.startsWith('/txn-withdrawals'),
       },
       ...config.UI.navigation.otherLinks,
     ].filter(Boolean);

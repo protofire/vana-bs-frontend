@@ -9,6 +9,7 @@ import NetworkLogo from 'ui/snippets/networkMenu/NetworkLogo';
 import UserProfileDesktop from 'ui/snippets/user/profile/UserProfileDesktop';
 import UserWalletDesktop from 'ui/snippets/user/wallet/UserWalletDesktop';
 
+import RollupStageBadge from '../RollupStageBadge';
 import TestnetBadge from '../TestnetBadge';
 import NavLink from './NavLink';
 import NavLinkGroup from './NavLinkGroup';
@@ -17,7 +18,7 @@ const NavigationDesktop = () => {
   const { mainNavItems } = useNavItems();
 
   return (
-    <Box borderColor="divider" borderBottomWidth="1px">
+    <Box borderColor="border.divider" borderBottomWidth="1px">
       <Flex
         display={{ base: 'none', lg: 'flex' }}
         alignItems="center"
@@ -26,8 +27,9 @@ const NavigationDesktop = () => {
         maxW={ `${ CONTENT_MAX_WIDTH }px` }
         m="0 auto"
       >
-        <NetworkLogo isCollapsed={ false } w={{ lg: 'auto' }} maxW="120px"/>
+        <NetworkLogo isCollapsed={ false } w={{ lg: '100%' }} maxW="120px"/>
         <TestnetBadge ml={ 3 }/>
+        <RollupStageBadge ml={ 3 }/>
         <chakra.nav ml="auto" mr={ config.features.account.isEnabled || config.features.blockchainInteraction.isEnabled ? 8 : 0 }>
           <Flex as="ul" columnGap={ 3 }>
             { mainNavItems.map((item) => {
