@@ -3,6 +3,7 @@ on:
     branches:
       - 'mainnet'
       - 'testnet'
+      - 'mainnet-v2.1.0'
 
 name: Docker build and push
 
