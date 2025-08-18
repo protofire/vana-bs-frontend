@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Box, Flex, HStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -359,6 +360,9 @@ const AddressPageContent = () => {
         undefined,
     ];
 
+    console.log('hash', hash);
+    console.log('Known addresses', KNOWN_ADDRESSES);
+
     if (KNOWN_ADDRESSES[hash.toLowerCase()]) {
       const publicTags = [
         {
@@ -375,6 +379,8 @@ const AddressPageContent = () => {
 
       blockscoutTags = blockscoutTags.concat(publicTags);
     }
+
+    console.log('tags', blockscoutTags.filter(Boolean).sort(sortEntityTags));
 
     return blockscoutTags.filter(Boolean).sort(sortEntityTags);
   }, [
