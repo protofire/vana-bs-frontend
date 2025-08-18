@@ -302,6 +302,9 @@ const AddressPageContent = () => {
       '0x1c346cd74f8551f8fa13f3f4b6b8dae22338e6a9': 'persistent-gpu',
       '0xf024b7ac5e8417416f53b41ecfa58c8e9396687d': 'dedicated-standard',
       '0xb1686fa9620bbf851714d1cb47b8a4bf4664644e': 'dedicated-gpu',
+      '0xd54523048add05b4d734afae7c68324ebb7373ef': 'DataPortabilityPermissions',
+      '0x1483b1f634dba75aeae60da7f01a679aabd5ee2c': 'DataPortabilityServers',
+      '0x8325c0a0948483eda023a1a2fd895e62c5131234': 'DataPortabilityGrantees',
     };
   }, []);
 
