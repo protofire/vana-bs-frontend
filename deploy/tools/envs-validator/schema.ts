@@ -71,12 +71,12 @@ const urlTest: yup.TestConfig = {
   exclusive: true,
 };
 
-const getYupValidationErrorMessage = (error: unknown) => 
-  typeof error === 'object' && 
-  error !== null && 
-  'errors' in error && 
-  Array.isArray(error.errors) ? 
-    error.errors.join(', ') : 
+const getYupValidationErrorMessage = (error: unknown) =>
+  typeof error === 'object' &&
+  error !== null &&
+  'errors' in error &&
+  Array.isArray(error.errors) ?
+    error.errors.join(', ') :
     '';
 
 const marketplaceAppSchema: yup.ObjectSchema<MarketplaceAppOverview> = yup
@@ -1094,6 +1094,10 @@ const schema = yup
     NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN: yup.string(),
     NEXT_PUBLIC_GROWTH_BOOK_CLIENT_KEY: yup.string(),
     NEXT_PUBLIC_ROLLBAR_CLIENT_TOKEN: yup.string(),
+
+    // 7. DCL Dashboard
+    NEXT_PUBLIC_DCL_DASHBOARD_ENABLED: yup.boolean(),
+    NEXT_PUBLIC_DCL_DASHBOARD_URL: yup.string().test(urlTest),
 
     // Misc
     NEXT_PUBLIC_USE_NEXT_JS_PROXY: yup.boolean(),

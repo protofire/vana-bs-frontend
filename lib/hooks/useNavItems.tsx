@@ -286,6 +286,12 @@ export default function useNavItems(): ReturnType {
         isActive: blockchainNavItems.flat().some(item => isInternalItem(item) && item.isActive),
         subItems: blockchainNavItems,
       },
+      config.features.dclDashboard.isEnabled ? {
+        text: 'Data Capital',
+        nextRoute: { pathname: '/dcl-dashboard' as const },
+        icon: 'collection',
+        isActive: pathname.startsWith('/dcl-dashboard'),
+      } : null,
       {
         text: 'Tokens',
         icon: 'token',
