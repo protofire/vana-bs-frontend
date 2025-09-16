@@ -4,7 +4,7 @@ import React from 'react';
 
 import PageNextJs from 'nextjs/PageNextJs';
 
-const DCLDashboard = dynamic(() => import('ui/pages/DCLDashboard/DCLDashboard'), { ssr: false });
+const DCLDashboard = dynamic(() => import('ui/pages/DCLDashboard'), { ssr: false });
 
 const Page: NextPage = () => {
 

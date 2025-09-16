@@ -2,7 +2,6 @@ import React from 'react';
 
 import config from 'configs/app';
 import PageTitle from 'ui/shared/Page/PageTitle';
-import './dcl-dashboard.css';
 
 const DCLDashboard = () => {
   const dclDashboard = config.features.dclDashboard;
