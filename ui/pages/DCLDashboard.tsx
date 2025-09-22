@@ -9,7 +9,7 @@ const DCLDashboard = () => {
   return (
     <div className="dcl-dashboard-wrapper">
       <PageTitle
-        title={ config.meta.seo.enhancedDataEnabled ? `${ config.chain.name } — Data Capital Locked (DCL)` : 'DCL Dashboard' }
+        title={ config.meta.seo.enhancedDataEnabled ? `Data Capital Locked (DCL)` : 'DCL Dashboard' }
       />
 
       { dclDashboard.isEnabled && (
