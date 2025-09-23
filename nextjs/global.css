@@ -23,7 +23,7 @@ div.dcl-dashboard-wrapper {
   }
 }
 
-@media(max-width: 792) {
+@media(max-width: 792px) {
   div.dcl-dashboard-wrapper {
     height: 2736px;
   }
