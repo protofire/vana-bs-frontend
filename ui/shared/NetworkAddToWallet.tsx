@@ -26,9 +26,9 @@ const NetworkAddToWallet = ({ source, onAddSuccess }: Props) => {
   return (
     <Button
       variant="outline"
-      size="2xs"
-      borderWidth="1px"
-      fontWeight="500"
+      size="sm"
+      borderWidth="2px"
+      fontWeight="600"
       color={ walletInfo.color }
       borderColor={ walletInfo.color }
       onClick={ handleClick }
@@ -37,7 +37,7 @@ const NetworkAddToWallet = ({ source, onAddSuccess }: Props) => {
         borderColor: 'link.primary.hover',
       }}
     >
-      <IconSvg name={ walletInfo.icon } boxSize={ 3 }/>
+      <IconSvg name={ walletInfo.icon } boxSize={ 5 }/>
       Add { config.chain.name }
     </Button>
   );

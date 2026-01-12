@@ -4,7 +4,7 @@ export const WALLETS_INFO: Record<Exclude<WalletType, 'none'>, WalletInfo> = {
   metamask: {
     name: 'MetaMask',
     icon: 'wallets/metamask',
-    color: '#FF8D5D',
+    color: '#595959',
   },
   coinbase: {
     name: 'Coinbase Wallet',
