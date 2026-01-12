@@ -14,7 +14,7 @@ import TimeWithTooltip from 'ui/shared/time/TimeWithTooltip';
 
 const rollupFeature = config.features.rollup;
 
- type Props = { item: ZkEvmL2WithdrawalsItem; isLoading?: boolean };
+type Props = { item: ZkEvmL2WithdrawalsItem; isLoading?: boolean };
 
 const ZkEvmL2WithdrawalsTableItem = ({ item, isLoading }: Props) => {
   if (!rollupFeature.isEnabled || rollupFeature.type !== 'zkEvm') {
@@ -61,6 +61,7 @@ const ZkEvmL2WithdrawalsTableItem = ({ item, isLoading }: Props) => {
             truncation="constant_long"
             noIcon
             textStyle="sm"
+            noCopy
           />
         ) : (
           <chakra.span color="text.secondary">

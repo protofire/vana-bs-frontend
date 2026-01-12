@@ -2,6 +2,7 @@ import { Flex, Box } from '@chakra-ui/react';
 import React from 'react';
 
 import type { TokenTransfer } from 'types/api/tokenTransfer';
+import type { ClusterChainConfig } from 'types/multichain';
 
 import getCurrencyValue from 'lib/getCurrencyValue';
 import { getTokenTypeName } from 'lib/token/tokenTypes';
@@ -12,6 +13,7 @@ import AddressFromTo from 'ui/shared/address/AddressFromTo';
 import NftEntity from 'ui/shared/entities/nft/NftEntity';
 import TokenEntity from 'ui/shared/entities/token/TokenEntity';
 import TxEntity from 'ui/shared/entities/tx/TxEntity';
+import ChainIcon from 'ui/shared/externalChains/ChainIcon';
 import TimeWithTooltip from 'ui/shared/time/TimeWithTooltip';
 import { getTokenTransferTypeText } from 'ui/shared/TokenTransfer/helpers';
 import TxAdditionalInfo from 'ui/txs/TxAdditionalInfo';
@@ -21,6 +23,7 @@ type Props = TokenTransfer & {
   showTxInfo?: boolean;
   enableTimeIncrement?: boolean;
   isLoading?: boolean;
+  chainData?: ClusterChainConfig;
 };
 
 const TokenTransferTableItem = ({
@@ -35,6 +38,7 @@ const TokenTransferTableItem = ({
   timestamp,
   enableTimeIncrement,
   isLoading,
+  chainData,
 }: Props) => {
   const { usd, valueStr } = total && 'value' in total && total.value !== null ? getCurrencyValue({
     value: total.value,
@@ -46,11 +50,22 @@ const TokenTransferTableItem = ({
 
   return (
     <TableRow alignItems="top">
-      { showTxInfo && txHash && (
+      { showTxInfo && (
         <TableCell>
-          <Box my="3px">
-            <TxAdditionalInfo hash={ txHash } isLoading={ isLoading }/>
-          </Box>
+          {
+            txHash ? (
+              <Box my="3px" textAlign="center">
+                <TxAdditionalInfo hash={ txHash } isLoading={ isLoading }/>
+              </Box>
+            ) : (
+              <div/>
+            )
+          }
+        </TableCell>
+      ) }
+      { chainData && (
+        <TableCell>
+          <ChainIcon data={ chainData } isLoading={ isLoading } my={ 1 }/>
         </TableCell>
       ) }
       <TableCell>
@@ -80,16 +95,20 @@ const TokenTransferTableItem = ({
           />
         ) }
       </TableCell>
-      { showTxInfo && txHash && (
+      { showTxInfo && (
         <TableCell>
-          <TxEntity
-            hash={ txHash }
-            isLoading={ isLoading }
-            fontWeight={ 600 }
-            noIcon
-            mt="7px"
-            truncation="constant_long"
-          />
+          { txHash ? (
+            <TxEntity
+              hash={ txHash }
+              isLoading={ isLoading }
+              fontWeight={ 600 }
+              noIcon
+              mt={ 1 }
+              truncation="constant_long"
+            />
+          ) : (
+            <Skeleton loading={ isLoading } mt={ 1 }>-</Skeleton>
+          ) }
           <TimeWithTooltip
             timestamp={ timestamp }
             enableIncrement={ enableTimeIncrement }

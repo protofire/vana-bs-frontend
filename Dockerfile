@@ -45,6 +45,24 @@ WORKDIR /sitemap-generator
 COPY ./deploy/tools/sitemap-generator/package.json ./deploy/tools/sitemap-generator/yarn.lock ./
 RUN yarn --frozen-lockfile --network-timeout 100000
 
+### MULTICHAIN CONFIG GENERATOR
+# Install dependencies
+WORKDIR /multichain-config-generator
+COPY ./deploy/tools/multichain-config-generator/package.json ./deploy/tools/multichain-config-generator/yarn.lock ./
+RUN yarn --frozen-lockfile --network-timeout 100000
+
+### ESSENTIAL DAPPS CHAINS CONFIG GENERATOR
+# Install dependencies
+WORKDIR /essential-dapps-chains-config-generator
+COPY ./deploy/tools/essential-dapps-chains-config-generator/package.json ./
+RUN yarn --frozen-lockfile --network-timeout 100000
+
+### llms.txt GENERATOR
+# Install dependencies
+WORKDIR /llms-txt-generator
+COPY ./deploy/tools/llms-txt-generator/package.json ./deploy/tools/llms-txt-generator/yarn.lock ./
+RUN yarn --frozen-lockfile --network-timeout 100000
+
 
 # *****************************
 # ****** STAGE 2: Build *******
@@ -92,7 +110,7 @@ RUN cd ./deploy/tools/feature-reporter && yarn build
 
 
 ### ENV VARIABLES CHECKER
-# Copy dependencies and source code, then build 
+# Copy dependencies and source code, then build
 COPY --from=deps /envs-validator/node_modules ./deploy/tools/envs-validator/node_modules
 RUN cd ./deploy/tools/envs-validator && yarn build
 
@@ -105,6 +123,21 @@ COPY --from=deps /favicon-generator/node_modules ./deploy/tools/favicon-generato
 ### SITEMAP GENERATOR
 # Copy dependencies and source code
 COPY --from=deps /sitemap-generator/node_modules ./deploy/tools/sitemap-generator/node_modules
+
+### MULTICHAIN CONFIG GENERATOR
+# Copy dependencies and source code, then build
+COPY --from=deps /multichain-config-generator/node_modules ./deploy/tools/multichain-config-generator/node_modules
+RUN cd ./deploy/tools/multichain-config-generator && yarn build
+
+### ESSENTIAL DAPPS CHAINS CONFIG GENERATOR
+# Copy dependencies and source code, then build
+COPY --from=deps /essential-dapps-chains-config-generator/node_modules ./deploy/tools/essential-dapps-chains-config-generator/node_modules
+RUN cd ./deploy/tools/essential-dapps-chains-config-generator && yarn build
+
+### llms.txt GENERATOR
+# Copy dependencies and source code, then build
+COPY --from=deps /llms-txt-generator/node_modules ./deploy/tools/llms-txt-generator/node_modules
+RUN cd ./deploy/tools/llms-txt-generator && yarn build
 
 
 # *****************************
@@ -130,11 +163,16 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/deploy/tools/envs-validator/index.js ./envs-validator.js
+
+# Copy tools
+COPY --from=builder /app/deploy/tools/envs-validator/dist/index.js ./envs-validator/index.js
 COPY --from=builder /app/deploy/tools/feature-reporter/index.js ./feature-reporter.js
+COPY --from=builder /app/deploy/tools/multichain-config-generator/dist ./deploy/tools/multichain-config-generator/dist
+COPY --from=builder /app/deploy/tools/llms-txt-generator/dist ./deploy/tools/llms-txt-generator/dist
+COPY --from=builder /app/deploy/tools/essential-dapps-chains-config-generator/dist ./deploy/tools/essential-dapps-chains-config-generator/dist
 
 # Copy scripts
-## Entripoint
+## Entrypoint
 COPY --chmod=755 ./deploy/scripts/entrypoint.sh .
 ## ENV validator and client script maker
 COPY --chmod=755 ./deploy/scripts/validate_envs.sh .

@@ -12,9 +12,9 @@ import TokensListItem from './TokensListItem';
 import TokensTable from './TokensTable';
 
 interface Props {
-  query: QueryWithPagesResult<'general:tokens'> | QueryWithPagesResult<'general:tokens_bridged'>;
-  onSortChange: (value: TokensSortingValue) => void;
-  sort: TokensSortingValue;
+  query: QueryWithPagesResult<'general:tokens'> | QueryWithPagesResult<'general:tokens_bridged'> | QueryWithPagesResult<'multichainAggregator:tokens'>;
+  onSortChange?: (value: TokensSortingValue) => void;
+  sort?: TokensSortingValue;
   actionBar?: React.ReactNode;
   hasActiveFilters: boolean;
   description?: React.ReactNode;
@@ -33,15 +33,19 @@ const Tokens = ({ query, onSortChange, sort, actionBar, description, hasActiveFi
     <>
       <Box hideFrom="lg">
         { description }
-        { data.items.map((item, index) => (
-          <TokensListItem
-            key={ item.address_hash + (isPlaceholderData ? index : '') }
-            token={ item }
-            index={ index }
-            page={ pagination.page }
-            isLoading={ isPlaceholderData }
-          />
-        )) }
+        { data.items.map((item, index) => {
+          const chainIds = 'chain_infos' in item ? Object.keys(item.chain_infos).join(',') : undefined;
+
+          return (
+            <TokensListItem
+              key={ item.address_hash + (isPlaceholderData ? index : '') + (chainIds ? chainIds : '') }
+              token={ item }
+              index={ index }
+              page={ pagination.page }
+              isLoading={ isPlaceholderData }
+            />
+          );
+        }) }
       </Box>
       <Box hideBelow="lg">
         { description }

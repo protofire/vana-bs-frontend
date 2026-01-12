@@ -28,6 +28,7 @@ const Footer = () => {
   const { data: backendVersionData } = useApiQuery('general:config_backend_version', {
     queryOptions: {
       staleTime: Infinity,
+      enabled: !config.features.opSuperchain.isEnabled,
     },
   });
   const apiVersionUrl = getApiVersionUrl(backendVersionData?.backend_version);
@@ -68,15 +69,17 @@ const Footer = () => {
   const renderNetworkInfo = React.useCallback((gridArea?: GridProps['gridArea']) => {
     return (
       <Flex
+        alignItems="center"
         gridArea={ gridArea }
         flexWrap="wrap"
-        columnGap={ 8 }
-        rowGap={ 6 }
+        justifyContent="flex-start"
+        columnGap={ 3 }
+        rowGap={ 2 }
         mb={{ base: 5, lg: 10 }}
         _empty={{ display: 'none' }}
       >
         { !config.UI.indexingAlert.intTxs.isHidden && <IntTxsIndexingStatus/> }
-        <NetworkAddToWallet/>
+        { !config.features.opSuperchain.isEnabled && <NetworkAddToWallet source="Footer"/> }
       </Flex>
     );
   }, []);
@@ -102,7 +105,7 @@ const Footer = () => {
         <Box mt={ 6 } alignItems="start" textStyle="xs">
           { apiVersionUrl && (
             <Text>
-              Backend: <Link href={ apiVersionUrl } target="_blank">{ backendVersionData?.backend_version }</Link>
+              Backend: <Link href={ apiVersionUrl } external noIcon>{ backendVersionData?.backend_version }</Link>
             </Text>
           ) }
         </Box>

@@ -1,4 +1,4 @@
-import { Text, Flex } from '@chakra-ui/react';
+import { Text, HStack } from '@chakra-ui/react';
 import React from 'react';
 
 import type { Address } from 'types/api/address';
@@ -43,32 +43,36 @@ const AddressNetWorth = ({ addressData, isLoading, addressHash }: Props) => {
 
   let multichainItems = null;
 
-  if (multichainFeature.isEnabled && !addressData?.is_contract) {
+  const isEip7702 = addressData?.implementations?.length && addressData?.proxy_type === 'eip7702';
+
+  if (multichainFeature.isEnabled && (!addressData?.is_contract || isEip7702)) {
     const { providers } = multichainFeature;
-    const hasSingleProvider = providers.length === 1;
 
     multichainItems = (
       <>
-        <TextSeparator mx={ 0 } color="gray.500"/>
-        <Flex alignItems="center" gap={ 2 }>
+        <TextSeparator/>
+        <HStack columnGap={ 2 }>
           <Text>Multichain</Text>
-          { providers.map((item) => (
-            <AddressMultichainButton
-              key={ item.name }
-              item={ item }
-              addressHash={ addressHash }
-              onClick={ onMultichainClick }
-              hasSingleProvider={ hasSingleProvider }
-            />
-          ))
-          }
-        </Flex>
+          <HStack gap={{ base: 2, lg: 3 }}>
+            { providers.map((item, index) => (
+              <AddressMultichainButton
+                key={ item.name }
+                item={ item }
+                addressHash={ addressHash }
+                onClick={ onMultichainClick }
+                isFirst={ index === 0 }
+                isLast={ index === providers.length - 1 }
+              />
+            ))
+            }
+          </HStack>
+        </HStack>
       </>
     );
   }
 
   return (
-    <Skeleton display="flex" alignItems="center" flexWrap="wrap" loading={ isLoading && !(addressData?.has_tokens && isPending) } gap={ 2 }>
+    <Skeleton display="flex" alignItems="center" flexWrap="wrap" loading={ isLoading && !(addressData?.has_tokens && isPending) }>
       <Text>
         { (isError || !addressData?.exchange_rate) ? 'N/A' : `${ prefix }$${ totalUsd.toFormat(2) }` }
       </Text>

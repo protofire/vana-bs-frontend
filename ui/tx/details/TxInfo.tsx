@@ -5,6 +5,7 @@ import {
   Spinner,
   Flex,
   chakra,
+  VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React from 'react';
@@ -47,7 +48,6 @@ import RawInputData from 'ui/shared/RawInputData';
 import StatusTag from 'ui/shared/statusTag/StatusTag';
 import TxStatus from 'ui/shared/statusTag/TxStatus';
 import TextSeparator from 'ui/shared/TextSeparator';
-import TxFee from 'ui/shared/tx/TxFee';
 import Utilization from 'ui/shared/Utilization/Utilization';
 import VerificationSteps from 'ui/shared/verificationSteps/VerificationSteps';
 import TxDetailsActions from 'ui/tx/details/txDetailsActions/TxDetailsActions';
@@ -63,8 +63,11 @@ import TxExternalTxs from 'ui/tx/TxExternalTxs';
 import TxSocketAlert from 'ui/tx/TxSocketAlert';
 import ZkSyncL2TxnBatchHashesInfo from 'ui/txnBatches/zkSyncL2/ZkSyncL2TxnBatchHashesInfo';
 
+import TxDetailsGasUsage from './TxDetailsGasUsage';
 import TxDetailsInterop from './TxDetailsInterop';
+import TxDetailsSetMaxGasLimit from './TxDetailsSetMaxGasLimit';
 import TxDetailsTacOperation from './TxDetailsTacOperation';
+import TxDetailsTxFee from './TxDetailsTxFee';
 import TxDetailsWithdrawalStatusArbitrum from './TxDetailsWithdrawalStatusArbitrum';
 import TxInfoScrollFees from './TxInfoScrollFees';
 
@@ -133,16 +136,16 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
     </Tooltip>
   ) : null;
 
-  const hasInterop = rollupFeature.isEnabled && rollupFeature.interopEnabled && data.op_interop;
+  const hasInterop = rollupFeature.isEnabled && rollupFeature.interopEnabled && data.op_interop_messages && data.op_interop_messages.length > 0;
 
   return (
-    <DetailedInfo.Container templateColumns={{ base: 'minmax(0, 1fr)', lg: 'max-content minmax(728px, auto)' }}>
+    <DetailedInfo.Container templateColumns={{ base: 'minmax(0, 1fr)', lg: 'minmax(215px, auto) minmax(0, 1fr)' }}>
 
       { config.features.metasuites.isEnabled && (
         <>
-          <Box display="none" id="meta-suites__tx-info-label" data-status={ data.status } data-ready={ !isLoading }/>
-          <Box display="none" id="meta-suites__tx-info-value"/>
-          <DetailedInfo.ItemDivider display="none" id="meta-suites__details-info-item-divider"/>
+          <Box display="none" as="p" id="meta-suites__tx-info-label" data-status={ data.status } data-ready={ !isLoading }/>
+          <Box display="none" as="p" id="meta-suites__tx-info-value"/>
+          <DetailedInfo.ItemDivider display="none" as="p" id="meta-suites__details-info-item-divider"/>
         </>
       ) }
 
@@ -154,7 +157,9 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
 
       { tacOperations && tacOperations.length > 0 && <TxDetailsTacOperation tacOperations={ tacOperations } isLoading={ isLoading } txHash={ data.hash }/> }
 
-      <TxDetailsInterop data={ data.op_interop } isLoading={ isLoading }/>
+      { data.op_interop_messages ? data.op_interop_messages.map((message) => (
+        <TxDetailsInterop key={ message.nonce } data={ message } isLoading={ isLoading }/>
+      )) : null }
 
       <DetailedInfo.ItemLabel
         hint="Unique character string (TxID) assigned to every verified transaction"
@@ -162,7 +167,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
       >
         Transaction hash
       </DetailedInfo.ItemLabel>
-      <DetailedInfo.ItemValue>
+      <DetailedInfo.ItemValue multiRow={ config.features.externalTxs.isEnabled && externalTxsQuery.data && externalTxsQuery.data.length > 0 }>
         <Flex flexWrap="nowrap" alignItems="center" overflow="hidden">
           { data.status === null && <Spinner mr={ 2 } size="sm" flexShrink={ 0 }/> }
           <Skeleton loading={ isLoading } overflow="hidden">
@@ -171,14 +176,14 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
           <CopyToClipboard text={ data.hash } isLoading={ isLoading }/>
           { config.features.metasuites.isEnabled && (
             <>
-              <TextSeparator color="gray.500" flexShrink={ 0 } display="none" id="meta-suites__tx-explorer-separator"/>
+              <TextSeparator flexShrink={ 0 } display="none" id="meta-suites__tx-explorer-separator"/>
               <Box display="none" flexShrink={ 0 } id="meta-suites__tx-explorer-link"/>
             </>
           ) }
         </Flex>
         { config.features.externalTxs.isEnabled && externalTxsQuery.data && externalTxsQuery.data.length > 0 && (
           <Skeleton loading={ isLoading || externalTxsQuery.isPlaceholderData } display={{ base: 'block', lg: 'inline-flex' }} alignItems="center">
-            { !isMobile && <TextSeparator color="gray.500" flexShrink={ 0 }/> }
+            { !isMobile && <TextSeparator flexShrink={ 0 }/> }
             <TxExternalTxs data={ externalTxsQuery.data }/>
           </Skeleton>
         ) }
@@ -223,14 +228,11 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
             <Flex flexDir="column" rowGap={ 2 }>
               { data.op_withdrawals.map((withdrawal) => (
                 <Box key={ withdrawal.nonce }>
-                  <Box mb={ 2 }>
+                  <Box mb={ 2 } py={{ base: '5px', lg: 1 }}>
                     <span>Nonce: </span>
                     <chakra.span fontWeight={ 600 }>{ withdrawal.nonce }</chakra.span>
                   </Box>
-                  <TxDetailsWithdrawalStatusOptimistic
-                    status={ withdrawal.status }
-                    l1TxHash={ withdrawal.l1_transaction_hash }
-                  />
+                  <TxDetailsWithdrawalStatusOptimistic data={ withdrawal } txHash={ data.hash } from={ data.from }/>
                 </Box>
               )) }
             </Flex>
@@ -278,7 +280,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
           >
             Revert reason
           </DetailedInfo.ItemLabel>
-          <DetailedInfo.ItemValue>
+          <DetailedInfo.ItemValue flexWrap="wrap" mt={{ base: '5px', lg: '4px' }}>
             <TxRevertReason { ...data.revert_reason }/>
           </DetailedInfo.ItemValue>
         </>
@@ -304,7 +306,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
       >
         Block
       </DetailedInfo.ItemLabel>
-      <DetailedInfo.ItemValue>
+      <DetailedInfo.ItemValue multiRow={ Boolean(data.scroll?.l2_block_status) }>
         { data.block_number === null ?
           <Text>Pending</Text> : (
             <BlockEntity
@@ -315,7 +317,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
           ) }
         { Boolean(data.confirmations) && (
           <>
-            <TextSeparator color="gray.500"/>
+            <TextSeparator/>
             <Skeleton loading={ isLoading } color="text.secondary">
               <span>{ data.confirmations } Block confirmations</span>
             </Skeleton>
@@ -323,7 +325,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
         ) }
         { data.scroll?.l2_block_status && (
           <>
-            <TextSeparator color="gray.500"/>
+            <TextSeparator/>
             <VerificationSteps steps={ SCROLL_L2_BLOCK_STATUSES } currentStep={ data.scroll.l2_block_status } isLoading={ isLoading }/>
           </>
         ) }
@@ -389,15 +391,17 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
           >
             Timestamp
           </DetailedInfo.ItemLabel>
-          <DetailedInfo.ItemValue>
-            <DetailedInfoTimestamp timestamp={ data.timestamp } isLoading={ isLoading }/>
+          <DetailedInfo.ItemValue multiRow>
+            <Flex alignItems="center" maxW="100%">
+              <DetailedInfoTimestamp timestamp={ data.timestamp } isLoading={ isLoading }/>
+            </Flex>
             { data.confirmation_duration && (
-              <>
-                <TextSeparator color="gray.500"/>
+              <Flex alignItems="center">
+                <TextSeparator hideBelow="lg"/>
                 <Skeleton loading={ isLoading } color="text.secondary">
                   <span>{ getConfirmationDuration(data.confirmation_duration) }</span>
                 </Skeleton>
-              </>
+              </Flex>
             ) }
           </DetailedInfo.ItemValue>
         </>
@@ -496,7 +500,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
 
       { data.token_transfers && <TxDetailsTokenTransfers data={ data.token_transfers } txHash={ data.hash } isOverflow={ data.token_transfers_overflow }/> }
 
-      { hasInterop && data.op_interop?.target && (
+      { hasInterop && data.op_interop_messages?.some(message => message.target_address_hash) && (
         <>
           <DetailedInfo.ItemLabel
             isLoading={ isLoading }
@@ -504,40 +508,24 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
           >
             Interop target
           </DetailedInfo.ItemLabel>
-          <DetailedInfo.ItemValue flexWrap="nowrap">
-            { data.op_interop?.relay_chain !== undefined ? (
-              <AddressEntityInterop
-                chain={ data.op_interop.relay_chain }
-                address={{ hash: data.op_interop.target }}
-                isLoading={ isLoading }
-                truncation="dynamic"
-              />
-            ) : (
-              <AddressEntity address={{ hash: data.op_interop.target }} isLoading={ isLoading } truncation="dynamic"/>
-            ) }
-          </DetailedInfo.ItemValue>
-        </>
-      ) }
-
-      { hasInterop && data.op_interop?.target && (
-        <>
-          <DetailedInfo.ItemLabel
-            isLoading={ isLoading }
-            hint="The target address where this cross-chain transaction is executed"
-          >
-            Interop target
-          </DetailedInfo.ItemLabel>
-          <DetailedInfo.ItemValue flexWrap="nowrap">
-            { data.op_interop?.relay_chain !== undefined ? (
-              <AddressEntityInterop
-                chain={ data.op_interop.relay_chain }
-                address={{ hash: data.op_interop.target }}
-                isLoading={ isLoading }
-                truncation="dynamic"
-              />
-            ) : (
-              <AddressEntity address={{ hash: data.op_interop.target }} isLoading={ isLoading } truncation="dynamic"/>
-            ) }
+          <DetailedInfo.ItemValue>
+            <VStack gap={ 2 } w="100%" overflow="hidden" alignItems="flex-start">
+              { data.op_interop_messages
+                .filter((message) => message.target_address_hash)
+                .map((message) => {
+                  return message.relay_chain !== undefined ? (
+                    <AddressEntityInterop
+                      chain={ message.relay_chain }
+                      address={{ hash: message.target_address_hash }}
+                      isLoading={ isLoading }
+                      truncation="dynamic"
+                      w="100%"
+                    />
+                  ) : (
+                    <AddressEntity address={{ hash: message.target_address_hash }} isLoading={ isLoading } truncation="dynamic" w="100%"/>
+                  );
+                }) }
+            </VStack>
           </DetailedInfo.ItemValue>
         </>
       ) }
@@ -626,6 +614,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
             <CurrencyValue
               value={ data.value }
               currency={ currencyUnits.ether }
+              decimals={ String(config.chain.currency.decimals) }
               exchangeRate={ data.exchange_rate }
               isLoading={ isLoading }
               flexWrap="wrap"
@@ -634,16 +623,23 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
         </>
       ) }
 
-      { !config.UI.views.tx.hiddenFields?.tx_fee && (
+      <TxDetailsTxFee isLoading={ isLoading } data={ data }/>
+
+      { rollupFeature.isEnabled && rollupFeature.type === 'optimistic' && data.operator_fee && (
         <>
           <DetailedInfo.ItemLabel
-            hint={ data.blob_gas_used ? 'Transaction fee without blob fee' : 'Total transaction fee' }
-            isLoading={ isLoading }
+            hint="A fee set by the chain operator to cover extra costs of additional services"
           >
-            Transaction fee
+            Operator fee
           </DetailedInfo.ItemLabel>
-          <DetailedInfo.ItemValue>
-            <TxFee tx={ data } isLoading={ isLoading } withUsd/>
+          <DetailedInfo.ItemValue multiRow>
+            <CurrencyValue
+              value={ data.operator_fee }
+              currency={ currencyUnits.ether }
+              decimals={ String(config.chain.currency.decimals) }
+              exchangeRate={ data.exchange_rate }
+              flexWrap="wrap"
+            />
           </DetailedInfo.ItemValue>
         </>
       ) }
@@ -660,6 +656,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
             <CurrencyValue
               value={ data.arbitrum.poster_fee }
               currency={ currencyUnits.ether }
+              decimals={ String(config.chain.currency.decimals) }
               exchangeRate={ data.exchange_rate }
               flexWrap="wrap"
               isLoading={ isLoading }
@@ -676,6 +673,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
             <CurrencyValue
               value={ data.arbitrum.network_fee }
               currency={ currencyUnits.ether }
+              decimals={ String(config.chain.currency.decimals) }
               exchangeRate={ data.exchange_rate }
               flexWrap="wrap"
               isLoading={ isLoading }
@@ -688,18 +686,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
 
       <TxDetailsFeePerGas txFee={ data.fee.value } gasUsed={ data.gas_used } isLoading={ isLoading }/>
 
-      <DetailedInfo.ItemLabel
-        hint="Actual gas amount used by the transaction"
-        isLoading={ isLoading }
-      >
-        Gas usage & limit by txn
-      </DetailedInfo.ItemLabel>
-      <DetailedInfo.ItemValue>
-        <Skeleton loading={ isLoading }>{ BigNumber(data.gas_used || 0).toFormat() }</Skeleton>
-        <TextSeparator/>
-        <Skeleton loading={ isLoading }>{ BigNumber(data.gas_limit).toFormat() }</Skeleton>
-        <Utilization ml={ 4 } value={ BigNumber(data.gas_used || 0).dividedBy(BigNumber(data.gas_limit)).toNumber() } isLoading={ isLoading }/>
-      </DetailedInfo.ItemValue>
+      { !config.UI.views.tx.additionalFields?.set_max_gas_limit && <TxDetailsGasUsage isLoading={ isLoading } data={ data }/> }
 
       { rollupFeature.isEnabled && rollupFeature.type === 'arbitrum' && data.arbitrum && data.gas_used && (
         <>
@@ -764,25 +751,25 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
           >
             { `Gas fees (${ currencyUnits.gwei })` }
           </DetailedInfo.ItemLabel>
-          <DetailedInfo.ItemValue>
+          <DetailedInfo.ItemValue multiRow>
             { data.base_fee_per_gas && (
               <Skeleton loading={ isLoading }>
-                <Text as="span" fontWeight="500">Base: </Text>
-                <Text fontWeight="600" as="span">{ BigNumber(data.base_fee_per_gas).dividedBy(WEI_IN_GWEI).toFixed() }</Text>
+                <span>Base: </span>
+                <span>{ BigNumber(data.base_fee_per_gas).dividedBy(WEI_IN_GWEI).toFixed() }</span>
                 { (data.max_fee_per_gas || data.max_priority_fee_per_gas) && <TextSeparator/> }
               </Skeleton>
             ) }
             { data.max_fee_per_gas && (
               <Skeleton loading={ isLoading }>
-                <Text as="span" fontWeight="500">Max: </Text>
-                <Text fontWeight="600" as="span">{ BigNumber(data.max_fee_per_gas).dividedBy(WEI_IN_GWEI).toFixed() }</Text>
+                <span>Max: </span>
+                <span>{ BigNumber(data.max_fee_per_gas).dividedBy(WEI_IN_GWEI).toFixed() }</span>
                 { data.max_priority_fee_per_gas && <TextSeparator/> }
               </Skeleton>
             ) }
             { data.max_priority_fee_per_gas && (
               <Skeleton loading={ isLoading }>
-                <Text as="span" fontWeight="500">Max priority: </Text>
-                <Text fontWeight="600" as="span">{ BigNumber(data.max_priority_fee_per_gas).dividedBy(WEI_IN_GWEI).toFixed() }</Text>
+                <span>Max priority: </span>
+                <span>{ BigNumber(data.max_priority_fee_per_gas).dividedBy(WEI_IN_GWEI).toFixed() }</span>
               </Skeleton>
             ) }
           </DetailedInfo.ItemValue>
@@ -815,8 +802,10 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
               >
                 L1 gas price
               </DetailedInfo.ItemLabel>
-              <DetailedInfo.ItemValue>
-                <Text mr={ 1 }>{ BigNumber(data.l1_gas_price).dividedBy(WEI).toFixed() } { currencyUnits.ether }</Text>
+              <DetailedInfo.ItemValue multiRow>
+                <Text mr={ 1 }>
+                  { BigNumber(data.l1_gas_price).dividedBy(WEI).toFixed() } { rollupFeature.parentChain.currency?.symbol || currencyUnits.ether }
+                </Text>
                 <Text color="text.secondary">({ BigNumber(data.l1_gas_price).dividedBy(WEI_IN_GWEI).toFixed() } { currencyUnits.gwei })</Text>
               </DetailedInfo.ItemValue>
             </>
@@ -831,12 +820,13 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
               >
                 L1 fee
               </DetailedInfo.ItemLabel>
-              <DetailedInfo.ItemValue>
+              <DetailedInfo.ItemValue multiRow>
                 <CurrencyValue
                   value={ data.l1_fee }
-                  currency={ currencyUnits.ether }
+                  currency={ rollupFeature.parentChain.currency?.symbol || currencyUnits.ether }
                   exchangeRate={ data.exchange_rate }
                   flexWrap="wrap"
+                  rowGap={ 0 }
                 />
               </DetailedInfo.ItemValue>
             </>
@@ -861,6 +851,8 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
 
       <CollapsibleDetails loading={ isLoading } mt={ 6 } gridColumn={{ base: undefined, lg: '1 / 3' }} isExpanded={ isExpanded } onClick={ handleCutLinkClick }>
         <GridItem colSpan={{ base: undefined, lg: 2 }} mt={{ base: 1, lg: 4 }}/>
+
+        <TxDetailsSetMaxGasLimit data={ data }/>
 
         <TxDetailsWithdrawalStatusArbitrum data={ data }/>
 
@@ -927,6 +919,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
 
         <DetailedInfo.ItemLabel
           hint="Binary data included with the transaction. See logs tab for additional info"
+          mb={{ base: 1, lg: 0 }}
         >
           Raw input
         </DetailedInfo.ItemLabel>
@@ -941,7 +934,7 @@ const TxInfo = ({ data, tacOperations, isLoading, socketStatus }: Props) => {
             >
               Decoded input data
             </DetailedInfo.ItemLabel>
-            <DetailedInfo.ItemValue>
+            <DetailedInfo.ItemValue flexWrap="wrap" mt={{ base: '5px', lg: '4px' }}>
               <LogDecodedInputData data={ data.decoded_input }/>
             </DetailedInfo.ItemValue>
           </>

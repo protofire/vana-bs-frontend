@@ -2,6 +2,7 @@ import { Flex } from '@chakra-ui/react';
 import React from 'react';
 
 import type { TokenTransfer } from 'types/api/tokenTransfer';
+import type { ClusterChainConfig } from 'types/multichain';
 
 import getCurrencyValue from 'lib/getCurrencyValue';
 import { getTokenTypeName } from 'lib/token/tokenTypes';
@@ -21,6 +22,7 @@ type Props = TokenTransfer & {
   showTxInfo?: boolean;
   enableTimeIncrement?: boolean;
   isLoading?: boolean;
+  chainData?: ClusterChainConfig;
 };
 
 const TokenTransferListItem = ({
@@ -35,6 +37,7 @@ const TokenTransferListItem = ({
   timestamp,
   enableTimeIncrement,
   isLoading,
+  chainData,
 }: Props) => {
   const { usd, valueStr } = total && 'value' in total && total.value !== null ? getCurrencyValue({
     value: total.value,
@@ -69,14 +72,17 @@ const TokenTransferListItem = ({
       { total && 'token_id' in total && total.token_id !== null && token && (
         <NftEntity hash={ token.address_hash } id={ total.token_id } instance={ total.token_instance } isLoading={ isLoading }/>
       ) }
-      { showTxInfo && txHash && (
+      { showTxInfo && (
         <Flex justifyContent="space-between" alignItems="center" lineHeight="24px" width="100%">
-          <TxEntity
-            isLoading={ isLoading }
-            hash={ txHash }
-            truncation="constant_long"
-            fontWeight="700"
-          />
+          { txHash && (
+            <TxEntity
+              isLoading={ isLoading }
+              hash={ txHash }
+              truncation="constant_long"
+              fontWeight="700"
+              chain={ chainData }
+            />
+          ) }
           <TimeWithTooltip
             timestamp={ timestamp }
             enableIncrement={ enableTimeIncrement }
@@ -97,7 +103,7 @@ const TokenTransferListItem = ({
       { valueStr && (
         <Flex columnGap={ 2 } w="100%">
           <Skeleton loading={ isLoading } fontWeight={ 500 } flexShrink={ 0 }>Value</Skeleton>
-          <Skeleton loading={ isLoading } color="text.secondary">
+          <Skeleton loading={ isLoading } color="text.secondary" wordBreak="break-all" overflow="hidden">
             <span>{ valueStr }</span>
             { usd && <span> (${ usd })</span> }
           </Skeleton>

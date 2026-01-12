@@ -38,7 +38,7 @@ const ContractDetailsAlerts = ({ data, isLoading, addressData, channel }: Props)
   });
 
   return (
-    <Flex flexDir="column" rowGap={ 2 } mb={ 6 } _empty={{ display: 'none' }}>
+    <Flex flexDir="column" rowGap={ 1 } mb={ 6 } _empty={{ display: 'none' }}>
       { data?.is_blueprint && (
         <Box>
           <span>This is an </span>
@@ -48,14 +48,13 @@ const ContractDetailsAlerts = ({ data, isLoading, addressData, channel }: Props)
         </Box>
       ) }
       { data?.is_verified && (
-        <Alert status="success" loading={ isLoading } descriptionProps={{ alignItems: 'center', flexWrap: 'wrap', rowGap: 3, columnGap: 5 }}>
+        <Alert status="success" loading={ isLoading } descriptionProps={{ alignItems: 'center', flexWrap: 'wrap', rowGap: 2, columnGap: 5 }}>
           <span>Contract Source Code Verified ({ data.is_partially_verified ? 'Partial' : 'Exact' } Match)</span>
           {
             data.is_partially_verified ? (
               <ContractDetailsVerificationButton
                 isLoading={ isLoading }
                 addressHash={ addressData.hash }
-                isPartiallyVerified
               />
             ) : null
           }

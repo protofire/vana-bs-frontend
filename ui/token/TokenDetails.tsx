@@ -1,4 +1,4 @@
-import { Box, Grid } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useRouter } from 'next/router';
@@ -10,6 +10,7 @@ import type { TokenInfo } from 'types/api/token';
 import config from 'configs/app';
 import type { ResourceError } from 'lib/api/resources';
 import useApiQuery from 'lib/api/useApiQuery';
+import { useMultichainContext } from 'lib/contexts/multichain';
 import throwOnResourceLoadError from 'lib/errors/throwOnResourceLoadError';
 import getCurrencyValue from 'lib/getCurrencyValue';
 import useIsMounted from 'lib/hooks/useIsMounted';
@@ -35,6 +36,9 @@ const TokenDetails = ({ tokenQuery }: Props) => {
 
   const hash = router.query.hash?.toString();
 
+  const multichainContext = useMultichainContext();
+  const chainSlug = multichainContext?.chain?.slug;
+
   const tokenCountersQuery = useApiQuery('general:token_counters', {
     pathParams: { hash },
     queryOptions: { enabled: Boolean(router.query.hash), placeholderData: TOKEN_COUNTERS },
@@ -43,8 +47,11 @@ const TokenDetails = ({ tokenQuery }: Props) => {
   const appActionData = useAppActionData(hash);
 
   const changeUrlAndScroll = useCallback((tab: TokenTabs) => () => {
+
     router.push(
-      { pathname: '/token/[hash]', query: { hash: hash || '', tab } },
+      chainSlug ?
+        { pathname: '/chain/[chain_slug]/token/[hash]', query: { hash: hash || '', tab, chain_slug: chainSlug } } :
+        { pathname: '/token/[hash]', query: { hash: hash || '', tab } },
       undefined,
       { shallow: true },
     );
@@ -52,7 +59,7 @@ const TokenDetails = ({ tokenQuery }: Props) => {
       duration: 500,
       smooth: true,
     });
-  }, [ hash, router ]);
+  }, [ chainSlug, hash, router ]);
 
   const countersItem = useCallback((item: 'token_holders_count' | 'transfers_count') => {
     const itemValue = tokenCountersQuery.data?.[item];
@@ -88,20 +95,19 @@ const TokenDetails = ({ tokenQuery }: Props) => {
   } = tokenQuery.data || {};
 
   let totalSupplyValue;
+  let totalSupplyValueFull;
 
   if (decimals) {
     const totalValue = totalSupply ? getCurrencyValue({ value: totalSupply, accuracy: 3, accuracyUsd: 2, exchangeRate, decimals }) : undefined;
+    const totalValueFull = totalSupply ? getCurrencyValue({ value: totalSupply, accuracyUsd: 2, exchangeRate, decimals }) : undefined;
     totalSupplyValue = totalValue?.valueStr;
+    totalSupplyValueFull = totalValueFull?.valueStr;
   } else {
     totalSupplyValue = Number(totalSupply).toLocaleString();
   }
 
   return (
-    <Grid
-      columnGap={ 8 }
-      rowGap={{ base: 1, lg: 3 }}
-      templateColumns={{ base: 'minmax(0, 1fr)', lg: 'auto minmax(0, 1fr)' }} overflow="hidden"
-    >
+    <DetailedInfo.Container>
       { exchangeRate && (
         <>
           <DetailedInfo.ItemLabel
@@ -146,7 +152,12 @@ const TokenDetails = ({ tokenQuery }: Props) => {
         whiteSpace="pre-wrap"
       >
         <Skeleton loading={ tokenQuery.isPlaceholderData } w="100%" display="flex">
-          <TruncatedValue value={ totalSupplyValue || '0' } maxW="80%" flexShrink={ 0 }/>
+          <TruncatedValue
+            value={ totalSupplyValue || '0' }
+            maxW="80%"
+            flexShrink={ 0 }
+            tooltipContent={ totalSupplyValueFull !== totalSupplyValue ? totalSupplyValueFull : undefined }
+          />
           <Box flexShrink={ 0 }> </Box>
           <TruncatedValue value={ symbol || '' }/>
         </Skeleton>
@@ -217,7 +228,7 @@ const TokenDetails = ({ tokenQuery }: Props) => {
       ) }
 
       <DetailedInfoSponsoredItem isLoading={ tokenQuery.isPlaceholderData }/>
-    </Grid>
+    </DetailedInfo.Container>
   );
 };
 

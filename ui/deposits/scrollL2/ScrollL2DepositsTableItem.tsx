@@ -14,7 +14,7 @@ import TimeWithTooltip from 'ui/shared/time/TimeWithTooltip';
 
 const rollupFeature = config.features.rollup;
 
- type Props = { item: ScrollL2MessageItem; isLoading?: boolean };
+type Props = { item: ScrollL2MessageItem; isLoading?: boolean };
 
 const ScrollL2DepositsTableItem = ({ item, isLoading }: Props) => {
   if (!rollupFeature.isEnabled || rollupFeature.type !== 'scroll') {
@@ -44,6 +44,7 @@ const ScrollL2DepositsTableItem = ({ item, isLoading }: Props) => {
           hash={ item.origination_transaction_hash }
           truncation="constant_long"
           noIcon
+          noCopy
         />
       </TableCell>
       <TableCell verticalAlign="middle" pr={ 12 }>

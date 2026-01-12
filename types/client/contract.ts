@@ -32,4 +32,6 @@ export const SMART_CONTRACT_LANGUAGE_FILTERS: Array<VerifiedContractsFilter> = [
   'vyper',
   'yul',
   'scilla',
+  'geas',
+  'stylus_rust',
 ];
