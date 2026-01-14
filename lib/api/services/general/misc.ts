@@ -7,7 +7,9 @@ import type {
 import type { Blob } from 'types/api/blobs';
 import type { Block } from 'types/api/block';
 import type { ChartMarketResponse, ChartSecondaryCoinPriceResponse, ChartTransactionResponse } from 'types/api/charts';
-import type { BackendVersionConfig, CsvExportConfig } from 'types/api/configs';
+import type { BackendVersionConfig, CeloConfig, CsvExportConfig } from 'types/api/configs';
+import type { DepositsResponse, DepositsCounters } from 'types/api/deposits';
+import type { CeloEpochDetails, CeloEpochElectionRewardDetailsResponse, CeloEpochListResponse } from 'types/api/epochs';
 import type { IndexingStatus } from 'types/api/indexingStatus';
 import type { NovesAccountHistoryResponse, NovesDescribeTxsResponse, NovesResponseData } from 'types/api/noves';
 import type {
@@ -45,6 +47,16 @@ export const GENERAL_API_MISC_RESOURCES = {
   },
   withdrawals_counters: {
     path: '/api/v2/withdrawals/counters',
+  },
+
+  // DEPOSITS
+  deposits: {
+    path: '/api/v2/beacon/deposits',
+    filterFields: [],
+    paginated: true,
+  },
+  deposits_counters: {
+    path: '/api/v2/beacon/deposits/count',
   },
 
   // APP STATS
@@ -115,17 +127,17 @@ export const GENERAL_API_MISC_RESOURCES = {
 
   // NOVES-FI
   noves_transaction: {
-    path: '/api/v2/proxy/3dparty/noves-fi/transactions/:hash',
+    path: '/api/v2/proxy/3rdparty/noves-fi/transactions/:hash',
     pathParams: [ 'hash' as const ],
   },
   noves_address_history: {
-    path: '/api/v2/proxy/3dparty/noves-fi/addresses/:address/transactions',
+    path: '/api/v2/proxy/3rdparty/noves-fi/addresses/:address/transactions',
     pathParams: [ 'address' as const ],
     filterFields: [],
     paginated: true,
   },
   noves_describe_txs: {
-    path: '/api/v2/proxy/3dparty/noves-fi/transaction-descriptions',
+    path: '/api/v2/proxy/3rdparty/noves-fi/transaction-descriptions',
   },
 
   // USER OPS
@@ -181,6 +193,23 @@ export const GENERAL_API_MISC_RESOURCES = {
     pathParams: [ 'hash' as const ],
   },
 
+  // EPOCHS
+  epochs_celo: {
+    path: '/api/v2/celo/epochs',
+    filterFields: [],
+    paginated: true,
+  },
+  epoch_celo: {
+    path: '/api/v2/celo/epochs/:number',
+    pathParams: [ 'number' as const ],
+  },
+  epoch_celo_election_rewards: {
+    path: '/api/v2/celo/epochs/:number/election-rewards/:reward_type',
+    pathParams: [ 'number' as const, 'reward_type' as const ],
+    filterFields: [],
+    paginated: true,
+  },
+
   // ADVANCED FILTER
   advanced_filter: {
     path: '/api/v2/advanced-filters',
@@ -224,11 +253,8 @@ export const GENERAL_API_MISC_RESOURCES = {
   config_csv_export: {
     path: '/api/v2/config/csv-export',
   },
-
-  // CSV EXPORT
-  csv_export_token_holders: {
-    path: '/api/v2/tokens/:hash/holders/csv',
-    pathParams: [ 'hash' as const ],
+  config_celo: {
+    path: '/api/v2/config/celo',
   },
 
   // OTHER
@@ -261,6 +287,7 @@ R extends 'general:search' ? SearchResult :
 R extends 'general:search_check_redirect' ? SearchRedirectResult :
 R extends 'general:config_backend_version' ? BackendVersionConfig :
 R extends 'general:config_csv_export' ? CsvExportConfig :
+R extends 'general:config_celo' ? CeloConfig :
 R extends 'general:blob' ? Blob :
 R extends 'general:validators_stability' ? ValidatorsStabilityResponse :
 R extends 'general:validators_stability_counters' ? ValidatorsStabilityCountersResponse :
@@ -268,6 +295,9 @@ R extends 'general:validators_blackfort' ? ValidatorsBlackfortResponse :
 R extends 'general:validators_blackfort_counters' ? ValidatorsBlackfortCountersResponse :
 R extends 'general:validators_zilliqa' ? ValidatorsZilliqaResponse :
 R extends 'general:validator_zilliqa' ? ValidatorZilliqa :
+R extends 'general:epochs_celo' ? CeloEpochListResponse :
+R extends 'general:epoch_celo' ? CeloEpochDetails :
+R extends 'general:epoch_celo_election_rewards' ? CeloEpochElectionRewardDetailsResponse :
 R extends 'general:user_ops' ? UserOpsResponse :
 R extends 'general:user_op' ? UserOp :
 R extends 'general:user_ops_account' ? UserOpsAccount :
@@ -277,6 +307,8 @@ R extends 'general:noves_address_history' ? NovesAccountHistoryResponse :
 R extends 'general:noves_describe_txs' ? NovesDescribeTxsResponse :
 R extends 'general:withdrawals' ? WithdrawalsResponse :
 R extends 'general:withdrawals_counters' ? WithdrawalsCounters :
+R extends 'general:deposits' ? DepositsResponse :
+R extends 'general:deposits_counters' ? DepositsCounters :
 R extends 'general:advanced_filter' ? AdvancedFilterResponse :
 R extends 'general:advanced_filter_methods' ? AdvancedFilterMethodsResponse :
 never;

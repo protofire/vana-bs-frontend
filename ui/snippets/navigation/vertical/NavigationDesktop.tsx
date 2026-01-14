@@ -6,8 +6,10 @@ import * as cookies from 'lib/cookies';
 import useNavItems, { isGroupItem } from 'lib/hooks/useNavItems';
 import IconSvg from 'ui/shared/IconSvg';
 import useIsAuth from 'ui/snippets/auth/useIsAuth';
-import NetworkLogo from 'ui/snippets/networkMenu/NetworkLogo';
+import NetworkIcon from 'ui/snippets/networkLogo/NetworkIcon';
+import NetworkLogo from 'ui/snippets/networkLogo/NetworkLogo';
 
+import NavigationPromoBanner from '../promoBanner/NavigationPromoBanner';
 import RollupStageBadge from '../RollupStageBadge';
 import TestnetBadge from '../TestnetBadge';
 import NavLink from './NavLink';
@@ -56,7 +58,8 @@ const NavigationDesktop = () => {
       borderRight="1px solid"
       borderColor="border.divider"
       px={{ lg: isExpanded ? 6 : 4, xl: isCollapsed ? 4 : 6 }}
-      py={ 12 }
+      pt={ 12 }
+      pb={ 6 }
       width={{ lg: isExpanded ? '229px' : '92px', xl: isCollapsed ? '92px' : '229px' }}
       onClick={ handleContainerClick }
       bgColor="vana.bgSubtle"
@@ -80,7 +83,12 @@ const NavigationDesktop = () => {
         transitionDuration="normal"
         transitionTimingFunction="ease"
       >
-        <NetworkLogo isCollapsed={ isCollapsed }/>
+        <Box display={{ base: 'none', lg: isCollapsed === false ? 'block' : 'none', xl: isCollapsed ? 'none' : 'block' }}>
+          <NetworkLogo/>
+        </Box>
+        <Box display={{ base: 'none', lg: isCollapsed === false ? 'none' : 'block', xl: isCollapsed ? 'block' : 'none' }}>
+          <NetworkIcon/>
+        </Box>
       </Box>
       <Box as="nav" mt={ 6 } w="100%">
         <VStack as="ul" gap="1" alignItems="flex-start">
@@ -101,13 +109,14 @@ const NavigationDesktop = () => {
           </VStack>
         </Box>
       ) }
+      <NavigationPromoBanner isCollapsed={ isCollapsed }/>
       <IconSvg
         name="arrows/east-mini"
         width={ 6 }
         height={ 6 }
-        _hover={{ color: 'link.primary.hover' }}
+        _hover={{ color: 'hover' }}
         borderRadius="base"
-        bgColor={{ base: 'white', _dark: 'black' }}
+        bgColor="bg.primary"
         color={{ base: 'blackAlpha.400', _dark: 'whiteAlpha.400' }}
         borderWidth="1px"
         borderColor="border.divider"

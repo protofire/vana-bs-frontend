@@ -22,7 +22,7 @@ const DeFiDropdown = () => {
   const source = getPageType(router.pathname);
 
   const handleClick = React.useCallback((content: string) => {
-    mixpanel.logEvent(mixpanel.EventTypes.BUTTON_CLICK, { Content: content, Source: source });
+    mixpanel.logEvent(mixpanel.EventTypes.BUTTON_CLICK, { Content: `DeFi button: ${ content }`, Source: source });
   }, [ source ]);
 
   if (!feature.isEnabled) {
@@ -45,7 +45,7 @@ const DeFiDropdown = () => {
           <IconSvg name="arrows/east-mini" boxSize={ 4 } ml={ 1 } transform="rotate(-90deg)"/>
         </Button>
       </PopoverTrigger>
-      <PopoverContent w="auto">
+      <PopoverContent w="auto" minW={{ base: 'auto', lg: '132px' }}>
         <PopoverBody >
           <Flex flexDirection="column" gap={ 1 }>
             { items.map((item, index) => (
@@ -56,7 +56,6 @@ const DeFiDropdown = () => {
       </PopoverContent>
     </PopoverRoot>
   ) : (
-
     <Link
       href={
         items[0].dappId ?
@@ -67,7 +66,7 @@ const DeFiDropdown = () => {
       asChild
     >
       <Button onClick={ items[0].onClick } size="2xs">
-        <IconSvg name={ items[0].icon } boxSize={ 3 } mr={{ base: 0, sm: 1 }}/>
+        { items[0].icon && <IconSvg name={ items[0].icon } boxSize={ 3 } mr={{ base: 0, sm: 1 }}/> }
         <Box display={{ base: 'none', sm: 'inline' }}>
           { items[0].text }
         </Box>

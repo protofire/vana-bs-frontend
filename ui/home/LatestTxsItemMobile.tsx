@@ -3,6 +3,7 @@ import {
   Flex,
   HStack,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import React from 'react';
 
@@ -65,7 +66,6 @@ const LatestTxsItem = ({ tx, isLoading }: Props) => {
           isLoading={ isLoading }
           color="text.secondary"
           fontWeight="400"
-          fontSize="sm"
           ml={ 3 }
         />
       </Flex>
@@ -73,22 +73,24 @@ const LatestTxsItem = ({ tx, isLoading }: Props) => {
         from={ tx.from }
         to={ dataTo }
         isLoading={ isLoading }
-        fontSize="sm"
         fontWeight="500"
-        mb={ 3 }
       />
-      { !config.UI.views.tx.hiddenFields?.value && (
-        <Skeleton loading={ isLoading } mb={ 2 } fontSize="sm" w="fit-content">
-          <Text as="span">Value </Text>
-          <Text as="span" color="text.secondary">{ getValueWithUnit(tx.value).dp(5).toFormat() } { currencyUnits.ether }</Text>
-        </Skeleton>
-      ) }
-      { !config.UI.views.tx.hiddenFields?.tx_fee && (
-        <Skeleton loading={ isLoading } fontSize="sm" w="fit-content" display="flex" whiteSpace="pre">
-          <Text as="span">Fee </Text>
-          <TxFee tx={ tx } accuracy={ 5 } color="text.secondary"/>
-        </Skeleton>
-      ) }
+      { !(config.UI.views.tx.hiddenFields?.value && config.UI.views.tx.hiddenFields?.tx_fee) ? (
+        <VStack rowGap={ 2 } mt={ 3 } alignItems="flex-start">
+          { !config.UI.views.tx.hiddenFields?.value && (
+            <Skeleton loading={ isLoading } w="fit-content">
+              <Text as="span">Value </Text>
+              <Text as="span" color="text.secondary">{ getValueWithUnit(tx.value).dp(5).toFormat() } { currencyUnits.ether }</Text>
+            </Skeleton>
+          ) }
+          { !config.UI.views.tx.hiddenFields?.tx_fee && (
+            <Skeleton loading={ isLoading } w="fit-content" display="flex" whiteSpace="pre">
+              <Text as="span">Fee </Text>
+              <TxFee tx={ tx } accuracy={ 5 } color="text.secondary"/>
+            </Skeleton>
+          ) }
+        </VStack>
+      ) : null }
     </Box>
   );
 };

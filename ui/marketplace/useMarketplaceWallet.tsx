@@ -15,8 +15,8 @@ type SendTransactionArgs = {
 
 export type SignTypedDataArgs<
   TTypedData extends
-  | TypedData
-  | {
+  | TypedData |
+  {
     [key: string]: unknown;
   } = TypedData,
   TPrimaryType extends string = string,
@@ -33,7 +33,7 @@ export default function useMarketplaceWallet(appId: string) {
   const logEvent = useCallback((event: mixpanel.EventPayload<mixpanel.EventTypes.WALLET_ACTION>['Action']) => {
     mixpanel.logEvent(
       mixpanel.EventTypes.WALLET_ACTION,
-      { Action: event, Address: address, AppId: appId },
+      { Action: event, Address: address, AppId: appId, Source: 'Dappscout' },
     );
   }, [ address, appId ]);
 

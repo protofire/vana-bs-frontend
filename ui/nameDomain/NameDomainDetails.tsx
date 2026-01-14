@@ -1,4 +1,4 @@
-import { Grid, Flex } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import React from 'react';
 
@@ -35,7 +35,7 @@ const NameDomainDetails = ({ query }: Props) => {
   return (
     <>
       <NameDomainDetailsAlert data={ query.data }/>
-      <Grid columnGap={ 8 } rowGap={ 3 } templateColumns={{ base: 'minmax(0, 1fr)', lg: 'max-content minmax(728px, auto)' }}>
+      <DetailedInfo.Container>
         { query.data?.registration_date && (
           <>
             <DetailedInfo.ItemLabel
@@ -45,7 +45,7 @@ const NameDomainDetails = ({ query }: Props) => {
               Registration date
             </DetailedInfo.ItemLabel>
             <DetailedInfo.ItemValue>
-              <IconSvg name="clock" boxSize={ 5 } color="gray.500" verticalAlign="middle" isLoading={ isLoading } mr={ 2 }/>
+              <IconSvg name="clock" boxSize={ 5 } color="icon.primary" verticalAlign="middle" isLoading={ isLoading } mr={ 2 }/>
               <Skeleton loading={ isLoading } display="inline" whiteSpace="pre-wrap" lineHeight="20px">
                 { dayjs(query.data.registration_date).format('llll') }
               </Skeleton>
@@ -63,19 +63,19 @@ const NameDomainDetails = ({ query }: Props) => {
               Expiration date
             </DetailedInfo.ItemLabel>
             <DetailedInfo.ItemValue>
-              <IconSvg name="clock" boxSize={ 5 } color="gray.500" verticalAlign="middle" isLoading={ isLoading } mr={ 2 } mt="-2px"/>
+              <IconSvg name="clock" boxSize={ 5 } color="icon.primary" verticalAlign="middle" isLoading={ isLoading } mr={ 2 } mt="-2px"/>
               { hasExpired && (
                 <>
                   <Skeleton loading={ isLoading } display="inline" whiteSpace="pre-wrap" lineHeight="24px">
                     { dayjs(query.data.expiry_date).fromNow() }
                   </Skeleton>
-                  <TextSeparator color="gray.500"/>
+                  <TextSeparator/>
                 </>
               ) }
               <Skeleton loading={ isLoading } display="inline" whiteSpace="pre-wrap" lineHeight="24px">
                 { dayjs(query.data.expiry_date).format('llll') }
               </Skeleton>
-              <TextSeparator color="gray.500"/>
+              <TextSeparator/>
               <Skeleton loading={ isLoading } color="text.secondary" display="inline">
                 <NameDomainExpiryStatus date={ query.data?.expiry_date }/>
               </Skeleton>
@@ -121,7 +121,10 @@ const NameDomainDetails = ({ query }: Props) => {
                 <Link
                   flexShrink={ 0 }
                   display="inline-flex"
-                  href={ route({ pathname: '/name-domains', query: { owned_by: 'true', resolved_to: 'true', address: query.data.registrant.hash } }) }
+                  href={ route({
+                    pathname: '/name-services',
+                    query: { tab: 'domains', owned_by: 'true', resolved_to: 'true', address: query.data.registrant.hash },
+                  }) }
                 >
                   <IconSvg name="search" boxSize={ 5 } isLoading={ isLoading }/>
                 </Link>
@@ -150,7 +153,10 @@ const NameDomainDetails = ({ query }: Props) => {
                 <Link
                   flexShrink={ 0 }
                   display="inline-flex"
-                  href={ route({ pathname: '/name-domains', query: { owned_by: 'true', resolved_to: 'true', address: query.data.owner.hash } }) }
+                  href={ route({
+                    pathname: '/name-services',
+                    query: { tab: 'domains', owned_by: 'true', resolved_to: 'true', address: query.data.owner.hash },
+                  }) }
                 >
                   <IconSvg name="search" boxSize={ 5 } isLoading={ isLoading }/>
                 </Link>
@@ -179,7 +185,10 @@ const NameDomainDetails = ({ query }: Props) => {
                 <Link
                   flexShrink={ 0 }
                   display="inline-flex"
-                  href={ route({ pathname: '/name-domains', query: { owned_by: 'true', resolved_to: 'true', address: query.data.wrapped_owner.hash } }) }
+                  href={ route({
+                    pathname: '/name-services',
+                    query: { tab: 'domains', owned_by: 'true', resolved_to: 'true', address: query.data.wrapped_owner.hash },
+                  }) }
                 >
                   <IconSvg name="search" boxSize={ 5 } isLoading={ isLoading }/>
                 </Link>
@@ -191,7 +200,7 @@ const NameDomainDetails = ({ query }: Props) => {
         { query.data?.tokens.map((token) => {
           const isProtocolBaseChain = stripTrailingSlash(query.data.protocol?.deployment_blockscout_base_url ?? '') === config.app.baseUrl;
           const entityProps = {
-            isExternal: !isProtocolBaseChain ? true : false,
+            link: { external: !isProtocolBaseChain ? true : false },
             href: !isProtocolBaseChain ? (
               stripTrailingSlash(query.data.protocol?.deployment_blockscout_base_url ?? '') +
             route({ pathname: '/token/[hash]/instance/[id]', query: { hash: token.contract_hash, id: token.id } })
@@ -242,7 +251,7 @@ const NameDomainDetails = ({ query }: Props) => {
             </DetailedInfo.ItemValue>
           </>
         ) }
-      </Grid>
+      </DetailedInfo.Container>
     </>
   );
 };

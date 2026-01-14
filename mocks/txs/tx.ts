@@ -88,6 +88,11 @@ export const withWatchListNames: Transaction = {
   } as Transaction['to'],
 };
 
+export const withPendingUpdate: Transaction = {
+  ...withWatchListNames,
+  is_pending_update: true,
+};
+
 export const withContractCreation: Transaction = {
   ...base,
   hash: '0x62d597ebcf3e8d60096dd0363bc2f0f5e2df27ba1dacd696c51aa7c9409f3195',
@@ -278,6 +283,7 @@ export const l2tx: Transaction = {
   l1_fee_scalar: '1.0',
   l1_gas_used: '17060',
   l1_fee: '1584574188135760',
+  operator_fee: '2769347953',
 };
 
 export const stabilityTx: Transaction = {
@@ -306,6 +312,7 @@ export const stabilityTx: Transaction = {
       symbol: 'GAS',
       total_supply: '10000000000000000000000000',
       type: 'ERC-20',
+      reputation: 'ok',
     },
     total_fee: '68762500000000',
     validator_address: {
@@ -337,6 +344,7 @@ export const celoTxn: Transaction = {
       symbol: 'cUSD',
       total_supply: '7145754483836626799435133',
       type: 'ERC-20',
+      reputation: 'ok',
     },
   },
 };
@@ -427,26 +435,26 @@ export const withRecipientContract = {
 
 export const withInteropInMessage: Transaction = {
   ...base,
-  op_interop: {
+  op_interop_messages: [ {
     init_chain: interopMock.chain,
     nonce: 1,
     payload: '0x',
     init_transaction_hash: '0x01a8c328b0370068aaaef49c107f70901cd79adcda81e3599a88855532122e09',
-    sender: addressMock.hash,
+    sender_address_hash: addressMock.hash,
     status: 'Sent',
-    target: addressMock.hash,
-  },
+    target_address_hash: addressMock.hash,
+  } ],
 };
 
 export const withInteropOutMessage: Transaction = {
   ...base,
-  op_interop: {
+  op_interop_messages: [ {
     relay_chain: interopMock.chain,
     nonce: 1,
     payload: '0xfa4b78b90000000000000000000000000000000000000000000000000000000005001bcfe835d1028984e9e6e7d016b77164eacbcc6cc061e9333c0b37982b504f7ea791000000000000000000000000a79b29ad7e0196c95b87f4663ded82fbf2e3add8',
     relay_transaction_hash: '0x01a8c328b0370068aaaef49c107f70901cd79adcda81e3599a88855532122e09',
-    sender: addressMock.hash,
+    sender_address_hash: addressMock.hash,
     status: 'Sent',
-    target: addressMock.hash,
-  },
+    target_address_hash: addressMock.hash,
+  } ],
 };

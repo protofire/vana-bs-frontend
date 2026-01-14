@@ -2,6 +2,7 @@ import { Flex } from '@chakra-ui/react';
 import React from 'react';
 
 import type { TokenTransfer } from 'types/api/tokenTransfer';
+import type { ClusterChainConfig } from 'types/multichain';
 
 import getCurrencyValue from 'lib/getCurrencyValue';
 import { NFT_TOKEN_TYPE_IDS } from 'lib/token/tokenTypes';
@@ -13,14 +14,16 @@ import BlockEntity from 'ui/shared/entities/block/BlockEntity';
 import NftEntity from 'ui/shared/entities/nft/NftEntity';
 import TokenEntity from 'ui/shared/entities/token/TokenEntity';
 import TxEntity from 'ui/shared/entities/tx/TxEntity';
+import ChainIcon from 'ui/shared/externalChains/ChainIcon';
 import TimeWithTooltip from 'ui/shared/time/TimeWithTooltip';
 
 type Props = {
   item: TokenTransfer;
   isLoading?: boolean;
+  chainData?: ClusterChainConfig;
 };
 
-const TokenTransferTableItem = ({ item, isLoading }: Props) => {
+const TokenTransferTableItem = ({ item, isLoading, chainData }: Props) => {
   const { valueStr } = item.total && 'value' in item.total && item.total.value !== null ? getCurrencyValue({
     value: item.total.value,
     exchangeRate: item.token?.exchange_rate,
@@ -31,14 +34,23 @@ const TokenTransferTableItem = ({ item, isLoading }: Props) => {
 
   return (
     <TableRow>
+      { chainData && (
+        <TableCell>
+          <ChainIcon data={ chainData } isLoading={ isLoading }/>
+        </TableCell>
+      ) }
       <TableCell>
-        <TxEntity
-          hash={ item.transaction_hash }
-          isLoading={ isLoading }
-          fontWeight={ 600 }
-          noIcon
-          truncation="constant_long"
-        />
+        { item.transaction_hash ? (
+          <TxEntity
+            hash={ item.transaction_hash }
+            isLoading={ isLoading }
+            fontWeight={ 600 }
+            noIcon
+            truncation="constant_long"
+          />
+        ) : (
+          <Skeleton loading={ isLoading }>-</Skeleton>
+        ) }
         <TimeWithTooltip
           timestamp={ item.timestamp }
           enableIncrement
@@ -72,7 +84,7 @@ const TokenTransferTableItem = ({ item, isLoading }: Props) => {
             isLoading={ isLoading }
             maxW="140px"
           />
-        ) : '-' }
+        ) : <Skeleton loading={ isLoading }>-</Skeleton> }
       </TableCell>
       <TableCell isNumeric verticalAlign="top">
         { (item.token && valueStr) ? (
@@ -90,7 +102,7 @@ const TokenTransferTableItem = ({ item, isLoading }: Props) => {
               maxW="100px"
             />
           </Flex>
-        ) : '-'
+        ) : <Skeleton loading={ isLoading }>-</Skeleton>
         }
       </TableCell>
     </TableRow>

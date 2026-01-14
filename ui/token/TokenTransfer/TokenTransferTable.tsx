@@ -4,6 +4,7 @@ import type { TokenInfo, TokenInstance } from 'types/api/token';
 import type { TokenTransfer } from 'types/api/tokenTransfer';
 
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
+import { useMultichainContext } from 'lib/contexts/multichain';
 import { NFT_TOKEN_TYPE_IDS } from 'lib/token/tokenTypes';
 import { TableBody, TableColumnHeader, TableHeaderSticky, TableRoot, TableRow } from 'toolkit/chakra/table';
 import * as SocketNewItemsNotice from 'ui/shared/SocketNewItemsNotice';
@@ -15,7 +16,7 @@ interface Props {
   data: Array<TokenTransfer>;
   top: number;
   showSocketInfo: boolean;
-  socketInfoAlert?: string;
+  showSocketErrorAlert?: boolean;
   socketInfoNum?: number;
   tokenId?: string;
   isLoading?: boolean;
@@ -23,8 +24,9 @@ interface Props {
   instance?: TokenInstance;
 }
 
-const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socketInfoNum, tokenId, isLoading, token, instance }: Props) => {
-
+const TokenTransferTable = ({ data, top, showSocketInfo, showSocketErrorAlert, socketInfoNum, tokenId, isLoading, token, instance }: Props) => {
+  const multichainContext = useMultichainContext();
+  const chainData = multichainContext?.chain;
   const tokenType = token.type;
 
   return (
@@ -32,6 +34,7 @@ const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socket
       <TableRoot minW="950px">
         <TableHeaderSticky top={ top }>
           <TableRow>
+            { chainData && <TableColumnHeader width="38px"/> }
             <TableColumnHeader width="280px">
               Txn hash
               <TimeFormatToggle/>
@@ -51,7 +54,7 @@ const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socket
         <TableBody>
           { showSocketInfo && (
             <SocketNewItemsNotice.Desktop
-              alert={ socketInfoAlert }
+              showErrorAlert={ showSocketErrorAlert }
               num={ socketInfoNum }
               type="token_transfer"
               isLoading={ isLoading }
@@ -64,6 +67,7 @@ const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socket
               tokenId={ tokenId }
               instance={ instance }
               isLoading={ isLoading }
+              chainData={ chainData }
             />
           )) }
         </TableBody>

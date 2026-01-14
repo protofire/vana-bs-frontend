@@ -9,7 +9,7 @@ import { getEnvValue, parseEnvJson } from 'configs/app/utils';
 const identiconType: IdenticonType = (() => {
   const value = getEnvValue('NEXT_PUBLIC_VIEWS_ADDRESS_IDENTICON_TYPE');
 
-  return IDENTICON_TYPES.find((type) => value === type) || 'jazzicon';
+  return IDENTICON_TYPES.find((type) => value === type) || 'blockie';
 })();
 
 const formats: Array<AddressFormat> = (() => {
@@ -82,9 +82,11 @@ const config = Object.freeze({
     bech32Prefix,
   },
   hiddenViews,
+  nativeTokenAddress: getEnvValue('NEXT_PUBLIC_VIEWS_ADDRESS_NATIVE_TOKEN_ADDRESS'),
   solidityscanEnabled: getEnvValue('NEXT_PUBLIC_VIEWS_CONTRACT_SOLIDITYSCAN_ENABLED') === 'true',
   extraVerificationMethods,
   languageFilters,
+  decodedBytecodeEnabled: getEnvValue('NEXT_PUBLIC_VIEWS_CONTRACT_DECODED_BYTECODE_ENABLED') === 'true',
 });
 
 export default config;

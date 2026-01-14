@@ -1,11 +1,12 @@
 import {
   HStack,
   Flex,
-
 } from '@chakra-ui/react';
 import React from 'react';
 
+import type { NovesDescribeTxsResponse } from 'types/api/noves';
 import type { Transaction } from 'types/api/transaction';
+import type { ClusterChainConfig } from 'types/multichain';
 
 import config from 'configs/app';
 import getValueWithUnit from 'lib/getValueWithUnit';
@@ -32,20 +33,33 @@ type Props = {
   enableTimeIncrement?: boolean;
   isLoading?: boolean;
   animation?: string;
+  chainData?: ClusterChainConfig;
+  translationIsLoading?: boolean;
+  translationData?: NovesDescribeTxsResponse;
 };
 
-const TxsListItem = ({ tx, isLoading, showBlockInfo, currentAddress, enableTimeIncrement, animation }: Props) => {
+const TxsListItem = ({
+  tx,
+  isLoading,
+  showBlockInfo,
+  currentAddress,
+  enableTimeIncrement,
+  animation,
+  chainData,
+  translationIsLoading,
+  translationData,
+}: Props) => {
   const dataTo = tx.to ? tx.to : tx.created_contract;
 
   return (
     <ListItemMobile display="block" width="100%" animation={ animation } key={ tx.hash }>
       <Flex justifyContent="space-between" alignItems="flex-start" mt={ 4 }>
         <HStack flexWrap="wrap">
-          { tx.translation ? (
+          { translationIsLoading || translationData ? (
             <TxTranslationType
-              types={ tx.transaction_types }
-              isLoading={ isLoading || tx.translation.isLoading }
-              translatationType={ tx.translation.data?.type }
+              txTypes={ tx.transaction_types }
+              isLoading={ isLoading || translationIsLoading }
+              type={ translationData?.type }
             />
           ) :
             <TxType types={ tx.transaction_types } isLoading={ isLoading }/>
@@ -61,9 +75,9 @@ const TxsListItem = ({ tx, isLoading, showBlockInfo, currentAddress, enableTimeI
           hash={ tx.hash }
           truncation="constant_long"
           fontWeight="700"
-          icon={{
-            name: tx.transaction_types.includes('blob_transaction') ? 'blob' : undefined,
-          }}
+          icon={ !tx.is_pending_update && tx.transaction_types.includes('blob_transaction') ? { name: 'blob' } : undefined }
+          chain={ chainData }
+          isPendingUpdate={ tx.is_pending_update }
         />
         <TimeWithTooltip
           timestamp={ tx.timestamp }

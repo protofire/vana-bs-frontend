@@ -1,13 +1,20 @@
 import BigNumber from 'bignumber.js';
+import { mapValues } from 'es-toolkit';
 
 import type { AddressTokenBalance } from 'types/api/address';
 import type { TokenType } from 'types/api/token';
 
+import config from 'configs/app';
 import sumBnReducer from 'lib/bigint/sumBnReducer';
 import { ZERO } from 'toolkit/utils/consts';
 
+const isNativeToken = (token: TokenEnhancedData) =>
+  config.UI.views.address.nativeTokenAddress &&
+  token.token.address_hash.toLowerCase() === config.UI.views.address.nativeTokenAddress.toLowerCase();
+
 export type TokenEnhancedData = AddressTokenBalance & {
   usd?: BigNumber ;
+  chain_values?: Record<string, string>;
 };
 
 export type Sort = 'desc' | 'asc';
@@ -92,9 +99,15 @@ export const calculateUsdValue = (data: AddressTokenBalance): TokenEnhancedData 
   };
 };
 
-export const getTokensTotalInfo = (data: TokenSelectData) => {
+export interface TokensTotalInfo {
+  usd: BigNumber;
+  num: number;
+  isOverflow: boolean;
+}
+
+export const getTokensTotalInfo = (data: TokenSelectData): TokensTotalInfo => {
   const usd = Object.values(data)
-    .map(({ items }) => items.reduce(usdValueReducer, ZERO))
+    .map(({ items }) => items.filter((item) => !isNativeToken(item)).reduce(usdValueReducer, ZERO))
     .reduce(sumBnReducer, ZERO);
 
   const num = Object.values(data)
@@ -104,6 +117,19 @@ export const getTokensTotalInfo = (data: TokenSelectData) => {
   const isOverflow = Object.values(data).some(({ isOverflow }) => isOverflow);
 
   return { usd, num, isOverflow };
+};
+
+export const getTokensTotalInfoByChain = (data: TokenSelectData, chainIds: Array<string>) => {
+  return chainIds.reduce((result, chainId) => {
+    const filteredData = mapValues(data, (item) => ({
+      ...item,
+      items: item.items.filter((item) => item.chain_values?.[chainId]),
+    }));
+
+    result[chainId] = getTokensTotalInfo(filteredData);
+
+    return result;
+  }, {} as Record<string, TokensTotalInfo>);
 };
 
 const usdValueReducer = (result: BigNumber, item: TokenEnhancedData) => !item.usd ? result : result.plus(BigNumber(item.usd));
