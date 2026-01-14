@@ -333,3 +333,11 @@ export const megaEth: Guard = () => async() => {
     };
   }
 };
+
+export const dclDashboard: Guard = () => async() => {
+  if (!config.features.dclDashboard.isEnabled) {
+    return {
+      notFound: true,
+    };
+  }
+};
