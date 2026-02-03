@@ -5,6 +5,11 @@
 
 // prettier-ignore
 declare module "nextjs-routes" {
+  import type {
+    GetServerSidePropsContext as NextGetServerSidePropsContext,
+    GetServerSidePropsResult as NextGetServerSidePropsResult
+  } from "nextjs";
+
   export type Route =
     | StaticRoute<"/404">
     | StaticRoute<"/account/api-key">
@@ -22,10 +27,10 @@ declare module "nextjs-routes" {
     | StaticRoute<"/api/csrf">
     | StaticRoute<"/api/healthz">
     | StaticRoute<"/api/log">
-    | StaticRoute<"/api/media-type">
     | StaticRoute<"/api/metrics">
     | StaticRoute<"/api/monitoring/invalid-api-schema">
     | StaticRoute<"/api/proxy">
+    | DynamicRoute<"/api/tokens/[hash]/instances/[id]/media-type", { "hash": string; "id": string }>
     | StaticRoute<"/api-docs">
     | DynamicRoute<"/apps/[id]", { "id": string }>
     | StaticRoute<"/apps">
@@ -59,6 +64,7 @@ declare module "nextjs-routes" {
     | StaticRoute<"/epochs">
     | DynamicRoute<"/essential-dapps/[id]", { "id": string }>
     | StaticRoute<"/gas-tracker">
+    | StaticRoute<"/hot-contracts">
     | StaticRoute<"/">
     | StaticRoute<"/internal-txs">
     | StaticRoute<"/interop-messages">
@@ -123,6 +129,33 @@ declare module "nextjs-routes" {
    * route({ pathname: "/foos/[foo]", query: { foo: "bar" }}) will produce "/foos/bar".
    */
   export declare function route(r: Route): string;
+
+  /**
+   * Nearly identical to GetServerSidePropsContext from next, but further narrows
+   * types based on nextjs-route's route data.
+   */
+  export type GetServerSidePropsContext<
+    Pathname extends Route["pathname"] = Route["pathname"],
+    Preview extends NextGetServerSidePropsContext["previewData"] = NextGetServerSidePropsContext["previewData"]
+  > = Omit<NextGetServerSidePropsContext, 'params' | 'query' | 'defaultLocale' | 'locale' | 'locales'> & {
+    params: Extract<Route, { pathname: Pathname }>["query"];
+    query: Query;
+    defaultLocale?: undefined;
+    locale?: Locale;
+    locales?: undefined;
+  };
+
+  /**
+   * Nearly identical to GetServerSideProps from next, but further narrows
+   * types based on nextjs-route's route data.
+   */
+  export type GetServerSideProps<
+    Props extends { [key: string]: any } = { [key: string]: any },
+    Pathname extends Route["pathname"] = Route["pathname"],
+    Preview extends NextGetServerSideProps["previewData"] = NextGetServerSideProps["previewData"]
+  > = (
+    context: GetServerSidePropsContext<Pathname, Preview>
+  ) => Promise<NextGetServerSidePropsResult<Props>>
 }
 
 // prettier-ignore
@@ -137,13 +170,12 @@ declare module "next/link" {
   } from "react";
   export * from "next/dist/client/link";
 
-  type Query = { query?: { [key: string]: string | string[] | undefined } };
   type StaticRoute = Exclude<Route, { query: any }>["pathname"];
 
   export interface LinkProps
     extends Omit<NextLinkProps, "href" | "locale">,
       AnchorHTMLAttributes<HTMLAnchorElement> {
-    href: Route | StaticRoute | Query;
+    href: Route | StaticRoute | Omit<Route, "pathname">
     locale?: false;
   }
 
@@ -171,7 +203,6 @@ declare module "next/router" {
 
   type NextTransitionOptions = NonNullable<Parameters<Router["push"]>[2]>;
   type StaticRoute = Exclude<Route, { query: any }>["pathname"];
-  type Query = { query?: { [key: string]: string | string[] | undefined } };
 
   interface TransitionOptions extends Omit<NextTransitionOptions, "locale"> {
     locale?: false;
@@ -193,12 +224,12 @@ declare module "next/router" {
         locale?: Locale;
         locales?: undefined;
         push(
-          url: Route | StaticRoute | Query,
+          url: Route | StaticRoute | Omit<Route, "pathname">,
           as?: string,
           options?: TransitionOptions
         ): Promise<boolean>;
         replace(
-          url: Route | StaticRoute | Query,
+          url: Route | StaticRoute | Omit<Route, "pathname">,
           as?: string,
           options?: TransitionOptions
         ): Promise<boolean>;
