@@ -10,14 +10,15 @@ import { Badge } from 'toolkit/chakra/badge';
 import { TableCell, TableRow } from 'toolkit/chakra/table';
 import AddressFromTo from 'ui/shared/address/AddressFromTo';
 import BlockPendingUpdateHint from 'ui/shared/block/BlockPendingUpdateHint';
-import CurrencyValue from 'ui/shared/CurrencyValue';
 import BlockEntity from 'ui/shared/entities/block/BlockEntity';
 import TxEntity from 'ui/shared/entities/tx/TxEntity';
+import EntityTag from 'ui/shared/EntityTags/EntityTag';
 import ChainIcon from 'ui/shared/externalChains/ChainIcon';
 import TxStatus from 'ui/shared/statusTag/TxStatus';
 import TimeWithTooltip from 'ui/shared/time/TimeWithTooltip';
 import TxFee from 'ui/shared/tx/TxFee';
 import TxWatchListTags from 'ui/shared/tx/TxWatchListTags';
+import NativeCoinValue from 'ui/shared/value/NativeCoinValue';
 import TxAdditionalInfo from 'ui/txs/TxAdditionalInfo';
 
 import TxTranslationType from './TxTranslationType';
@@ -48,6 +49,8 @@ const TxsTableItem = ({
 }: Props) => {
   const dataTo = tx.to ? tx.to : tx.created_contract;
 
+  const protocolTag = tx.to?.metadata?.tags?.find(tag => tag.tagType === 'protocol');
+
   return (
     <TableRow key={ tx.hash } animation={ animation }>
       <TableCell textAlign="center">
@@ -77,7 +80,7 @@ const TxsTableItem = ({
         </VStack>
       </TableCell>
       <TableCell>
-        <VStack alignItems="start">
+        <VStack alignItems="stretch">
           { translationIsLoading || translationData ? (
             <TxTranslationType
               txTypes={ tx.transaction_types }
@@ -92,11 +95,14 @@ const TxsTableItem = ({
         </VStack>
       </TableCell>
       <TableCell whiteSpace="nowrap">
-        { tx.method && (
-          <Badge colorPalette={ tx.method === 'Multicall' ? 'teal' : 'gray' } loading={ isLoading } truncated>
-            <span>{ tx.method }</span>
-          </Badge>
-        ) }
+        <VStack alignItems="flex-start">
+          { tx.method && (
+            <Badge colorPalette={ tx.method === 'Multicall' ? 'teal' : 'gray' } loading={ isLoading } truncated>
+              <span>{ tx.method }</span>
+            </Badge>
+          ) }
+          { protocolTag && <EntityTag data={ protocolTag } isLoading={ isLoading } maxW="100%"/> }
+        </VStack>
       </TableCell>
       { showBlockInfo && (
         <TableCell>
@@ -126,7 +132,14 @@ const TxsTableItem = ({
       </TableCell>
       { !config.UI.views.tx.hiddenFields?.value && (
         <TableCell isNumeric>
-          <CurrencyValue value={ tx.value } decimals={ String(config.chain.currency.decimals) } accuracy={ 8 } isLoading={ isLoading } wordBreak="break-word"/>
+          <NativeCoinValue
+            amount={ tx.value }
+            noSymbol
+            loading={ isLoading }
+            exchangeRate={ tx.exchange_rate }
+            layout="vertical"
+            rowGap={ 3 }
+          />
         </TableCell>
       ) }
       { !config.UI.views.tx.hiddenFields?.tx_fee && (
@@ -134,10 +147,10 @@ const TxsTableItem = ({
           <TxFee
             tx={ tx }
             accuracy={ 8 }
-            isLoading={ isLoading }
-            withCurrency={ Boolean(tx.celo || tx.stability_fee) }
-            justifyContent="end"
-            wordBreak="break-word"
+            loading={ isLoading }
+            noSymbol={ !(tx.celo || tx.stability_fee) }
+            layout="vertical"
+            rowGap={ 3 }
           />
         </TableCell>
       ) }

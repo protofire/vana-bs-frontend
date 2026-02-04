@@ -146,6 +146,7 @@ const schema = yup
         return isUndefined || valueSchema.isValidSync(data);
       }),
     NEXT_PUBLIC_FLASHBLOCKS_SOCKET_URL: yup.string().test(urlTest),
+    NEXT_PUBLIC_HOT_CONTRACTS_ENABLED: yup.boolean(),
 
     // 7. DCL Dashboard
     NEXT_PUBLIC_DCL_DASHBOARD_ENABLED: yup.boolean(),
@@ -168,6 +169,7 @@ const schema = yup
   .concat(featuresSchemas.beaconChainSchema)
   .concat(featuresSchemas.bridgedTokensSchema)
   .concat(featuresSchemas.defiDropdownSchema)
+  .concat(featuresSchemas.highlightsConfigSchema)
   .concat(featuresSchemas.marketplaceSchema)
   .concat(featuresSchemas.megaEthSchema)
   .concat(featuresSchemas.rollupSchema)
