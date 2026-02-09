@@ -6,6 +6,7 @@ export function monaco(): CspDev.DirectiveDescriptor {
   return {
     'script-src': [
       KEY_WORDS.BLOB,
+      'https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs/loader.js',
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js',
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.js',
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.nls.js',
@@ -19,6 +20,8 @@ export function monaco(): CspDev.DirectiveDescriptor {
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/language/typescript/tsMode.js',
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/language/typescript/tsWorker.js',
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/base/worker/workerMain.js',
+      '\'sha256-NzvNrqk5jB9YZATwo5BF4JoRlJ02HsnFikbKXgEPdaQ=\'',
+      '\'sha256-/ZmmXHg9XaKeWp0VJihBDn4cJ7lLM1jUtpgqdgVFvmA=\'',
     ],
     'style-src': [
       'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.css',
