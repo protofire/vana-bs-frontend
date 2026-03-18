@@ -11,6 +11,8 @@ import useApiQuery from 'lib/api/useApiQuery';
 import useFetch from 'lib/hooks/useFetch';
 import { Link } from 'toolkit/chakra/link';
 import { Skeleton } from 'toolkit/chakra/skeleton';
+import { copy } from 'toolkit/utils/htmlEntities';
+import IconSvg from 'ui/shared/IconSvg';
 import { CONTENT_MAX_WIDTH } from 'ui/shared/layout/utils';
 import NetworkAddToWallet from 'ui/shared/NetworkAddToWallet';
 
@@ -20,8 +22,8 @@ import getApiVersionUrl from './utils/getApiVersionUrl';
 
 const MAX_LINKS_COLUMNS = 4;
 
-// const FRONT_VERSION_URL = `https://github.com/blockscout/frontend/tree/${ config.UI.footer.frontendVersion }`;
-// const FRONT_COMMIT_URL = `https://github.com/blockscout/frontend/commit/${ config.UI.footer.frontendCommit }`;
+const FRONT_VERSION_URL = `https://github.com/blockscout/frontend/tree/${ config.UI.footer.frontendVersion }`;
+const FRONT_COMMIT_URL = `https://github.com/blockscout/frontend/commit/${ config.UI.footer.frontendCommit }`;
 
 const Footer = () => {
 
@@ -54,6 +56,18 @@ const Footer = () => {
     },
   ];
 
+  const frontendLink = (() => {
+    if (config.UI.footer.frontendVersion) {
+      return <Link href={ FRONT_VERSION_URL } external noIcon>{ config.UI.footer.frontendVersion }</Link>;
+    }
+
+    if (config.UI.footer.frontendCommit) {
+      return <Link href={ FRONT_COMMIT_URL } external noIcon>{ config.UI.footer.frontendCommit }</Link>;
+    }
+
+    return null;
+  })();
+
   const fetch = useFetch();
 
   const { isPlaceholderData, data: linksData } = useQuery<unknown, ResourceError<unknown>, Array<CustomLinksGroup>>({
@@ -85,9 +99,23 @@ const Footer = () => {
   }, []);
 
   const renderProjectInfo = React.useCallback((gridArea?: GridProps['gridArea']) => {
+    const logoColor = { base: 'blue.600', _dark: 'white' };
 
     return (
       <Box gridArea={ gridArea }>
+        <Flex columnGap={ 2 } textStyle="xs" alignItems="center">
+          <span>Made with</span>
+          <Link
+            href="https://www.blockscout.com"
+            external
+            noIcon
+            display="inline-flex"
+            color={ logoColor }
+            _hover={{ color: logoColor }}
+          >
+            <IconSvg name="networks/logo-placeholder" width="80px" height={ 4 }/>
+          </Link>
+        </Flex>
         <Flex columnGap={ 2 } textStyle="xs" alignItems="center" lineHeight={ 5 } color="text">
           <Link
             external
@@ -108,10 +136,18 @@ const Footer = () => {
               Backend: <Link href={ apiVersionUrl } external noIcon>{ backendVersionData?.backend_version }</Link>
             </Text>
           ) }
+          { frontendLink && (
+            <Text>
+              Frontend: { frontendLink }
+            </Text>
+          ) }
+          <Text>
+            Copyright { copy } Blockscout Limited 2023-{ (new Date()).getFullYear() }
+          </Text>
         </Box>
       </Box>
     );
-  }, [ apiVersionUrl, backendVersionData?.backend_version ]);
+  }, [ apiVersionUrl, backendVersionData?.backend_version, frontendLink ]);
 
   const containerProps: HTMLChakraProps<'div'> = {
     as: 'footer',
