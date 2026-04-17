@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react';
 
 import type { ApiKey } from 'types/api/account';
 
+import config from 'configs/app';
 import useApiQuery from 'lib/api/useApiQuery';
 import { API_KEY } from 'stubs/account';
 import { Button } from 'toolkit/chakra/button';
@@ -15,11 +16,15 @@ import ApiKeyListItem from 'ui/apiKey/ApiKeyTable/ApiKeyListItem';
 import ApiKeyTable from 'ui/apiKey/ApiKeyTable/ApiKeyTable';
 import DeleteApiKeyModal from 'ui/apiKey/DeleteApiKeyModal';
 import AccountPageDescription from 'ui/shared/AccountPageDescription';
+import AlertWithExternalHtml from 'ui/shared/alerts/AlertWithExternalHtml';
 import DataFetchAlert from 'ui/shared/DataFetchAlert';
 import PageTitle from 'ui/shared/Page/PageTitle';
 import useRedirectForInvalidAuthToken from 'ui/snippets/auth/useRedirectForInvalidAuthToken';
 
 const DATA_LIMIT = 3;
+
+const apiKeysAlertHtml = config.UI.apiKeysAlert.message;
+const feature = config.features.account;
 
 const ApiKeysPage: React.FC = () => {
   const apiKeyModalProps = useDisclosure();
@@ -94,9 +99,35 @@ const ApiKeysPage: React.FC = () => {
 
     const canAdd = !isPlaceholderData ? (data?.length || 0) < DATA_LIMIT : true;
 
+    const alert = apiKeysAlertHtml ? <AlertWithExternalHtml html={ apiKeysAlertHtml } status="warning" mb={ 6 }/> : null;
+
+    const button = (() => {
+      if (!feature.isEnabled || feature.apiKeysButton === false) {
+        return null;
+      }
+
+      if (typeof feature.apiKeysButton === 'string') {
+        return (
+          <Link href={ feature.apiKeysButton } external noIcon>
+            <Button>Add API key</Button>
+          </Link>
+        );
+      }
+
+      return (
+        <Button
+          onClick={ apiKeyModalProps.onOpen }
+          disabled={ !canAdd }
+        >
+          Add API key
+        </Button>
+      );
+    })();
+
     return (
       <>
         { description }
+        { alert }
         { Boolean(data?.length) && list }
         <Skeleton
           marginTop={ 8 }
@@ -107,12 +138,7 @@ const ApiKeysPage: React.FC = () => {
           columnGap={ 5 }
           rowGap={ 5 }
         >
-          <Button
-            onClick={ apiKeyModalProps.onOpen }
-            disabled={ !canAdd }
-          >
-            Add API key
-          </Button>
+          { button }
           { !canAdd && (
             <Text fontSize="sm" color="text.secondary">
               { `You have added the maximum number of API keys (${ DATA_LIMIT }). Contact us to request additional keys.` }
