@@ -13,6 +13,7 @@ declare global {
   export interface Window {
     ethereum?: WalletProvider | undefined;
     coinzilla_display: Array<CPreferences>;
+    sevioads: Array<Array<Record<string, string>>> | undefined;
     ga?: {
       getAll: () => Array<{ get: (prop: string) => string }>;
     };
@@ -22,8 +23,8 @@ declare global {
     };
     abkw: string;
     __envs: Record<string, string>;
-    __multichainConfig: MultichainConfig;
-    __essentialDappsChains: { chains: Array<EssentialDappsChainConfig> };
+    __multichainConfig?: MultichainConfig;
+    __essentialDappsChains?: { chains: Array<EssentialDappsChainConfig> };
   }
 
   namespace NodeJS {

@@ -5,6 +5,7 @@ import { Button } from 'toolkit/chakra/button';
 import { toaster } from 'toolkit/chakra/toaster';
 
 import { Section, Container, SectionHeader, SamplesStack, Sample } from './parts';
+import { TEXT } from './utils';
 
 const ToastShowcase = () => {
   return (
@@ -13,7 +14,7 @@ const ToastShowcase = () => {
         <SectionHeader>Type</SectionHeader>
         <SamplesStack>
           <Sample label="type: info">
-            <Button onClick={ () => toaster.create({ title: 'Info', description: 'Toast content', type: 'info' }) }>
+            <Button onClick={ () => toaster.create({ title: 'Info', description: TEXT.slice(0, 100), type: 'info' }) }>
               Info
             </Button>
           </Sample>
